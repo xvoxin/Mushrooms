@@ -1,18 +1,19 @@
 ﻿using System;
+using System.CodeDom;
 using System.Linq;
 
-namespace MatrixCalculator
+namespace MushroomsCs
 {
-    public class Matrix<T> where T : new()
+    public class Matrix
     {
         public int NumberOfRows => MatrixValues.GetLength(0);
         public int NumberOfColumns => MatrixValues.GetLength(1);
 
-        public T[,] MatrixValues { get; set; }
-        public T[,] TempMatrixValues { get; set; }
+        public double[,] MatrixValues { get; set; }
+        public double[,] TempMatrixValues { get; set; }
 
 
-        public Matrix(T[,] matrix)
+        public Matrix(double[,] matrix)
         {
             MatrixValues = matrix;
         }
@@ -22,166 +23,134 @@ namespace MatrixCalculator
             MatrixValues = InitializeWithRandomNumbers(rows, columns);
         }
 
-        private T[,] InitializeWithRandomNumbers(int rows, int columns)
+        private void SetTempMatrix()
+        {
+            TempMatrixValues = (double[,])MatrixValues.Clone();
+        }
+
+        private double[,] InitializeWithRandomNumbers(int rows, int columns)
         {
             var random = new Random();
-            var matrix = new T[rows, columns];
+            var matrix = new double[rows, columns];
 
-            if (matrix is double[,])
+            for (int i = 0; i < rows; i++)
             {
-                for (int i = 0; i < rows; i++)
+                for (int j = 0; j < columns; j++)
                 {
-                    for (int j = 0; j < columns; j++)
-                    {
-                        matrix[i, j] = (dynamic)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
-                    }
-                }
-            }
-            else if (matrix is float[,])
-            {
-                for (int i = 0; i < rows; i++)
-                {
-                    for (int j = 0; j < columns; j++)
-                    {
-                        matrix[i, j] = (dynamic)(float)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
-                    }
-                }
-            }
-            else if (matrix is Fraction[,])
-            {
-                for (int i = 0; i < rows; i++)
-                {
-                    for (int j = 0; j < columns; j++)
-                    {
-                        matrix[i, j] = (dynamic) new Fraction(random.Next(1, 10), random.Next(1, 10));
-                    }
+                    matrix[i, j] = random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
                 }
             }
             return matrix;
         }
 
-        public static Matrix<T> operator +(Matrix<T> i, Matrix<T> j)
+        public static Matrix operator +(Matrix i, Matrix j)
         {
-            return new Matrix<T>(Add(i, j));
+            return new Matrix (Add(i, j));
         }
 
-        public static Matrix<T> operator -(Matrix<T> i, Matrix<T> j)
+        public static Matrix operator *(Matrix i, Matrix j)
         {
-            return new Matrix<T>(Subtract(i, j));
+            return new Matrix(Multiply(i, j));
         }
 
-        public static Matrix<T> operator *(Matrix<T> i, Matrix<T> j)
-        {
-            return new Matrix<T>(Multiply(i, j));
-        }
-
-        public static T[] operator *(Matrix<T> a, T[] vector)
+        public static double[] operator *(Matrix a, double[] vector)
         {
             return MultiplyByVector(a, vector);
         }
 
-        private static T[,] Multiply(Matrix<T> a, Matrix<T> b)
+        private static double[,] Multiply(Matrix a, Matrix b)
         {
             var numberOfRows = a.NumberOfRows;
             var numberOfColumns = a.NumberOfColumns;
-            var result = new T[a.NumberOfRows, b.NumberOfColumns];
+            var result = new double[a.NumberOfRows, b.NumberOfColumns];
             for (int i = 0; i < numberOfRows; i++)
             {
                 for (int j = 0; j < numberOfColumns; j++)
                 {
-                    var value = new T();
+                    double value = 0;
                     for (int k = 0; k < numberOfRows; k++)
                     {
-                        value += (dynamic)b.MatrixValues[k, j] * (dynamic)a.MatrixValues[i, k];
+                        value += b.MatrixValues[k, j] * a.MatrixValues[i, k];
                     }
-                    result[i, j] = (dynamic)value;
+                    result[i, j] = value;
                 }
             }
             return result;
         }
 
-        private static T[] MultiplyByVector(Matrix<T> a, T[] vector)
+        private static double[] MultiplyByVector(Matrix a, double[] vector)
         {
             var numberOfRows = a.NumberOfRows;
             var numberOfColumns = a.NumberOfColumns;
-            var result = new T[a.NumberOfRows];
-            for(int i = 0; i < a.NumberOfRows; i++)
-            {
-                result[i] = new T();
-            }
+            var result = new double[a.NumberOfRows];
 
             for (int i = 0; i < numberOfRows; i++)
             {
                 for (int j = 0; j < numberOfColumns; j++)
                 {
-                    result[i] += (dynamic)a.MatrixValues[i, j] * vector[j];
+                    result[i] += a.MatrixValues[i, j] * vector[j];
                 }
             }
             return result;
         }
 
-        private static T[,] Add(Matrix<T> a, Matrix<T> b)
+        private static double[] AddVectorToVector(double[] a, double[] b)
+        {
+            double[] ret = new double[a.Length];
+            for(int i = 0; i < a.Length; i++)
+            {
+                ret[i] = a[i] + b[i];
+            }
+            return ret;
+        }
+
+        private static double[,] Add(Matrix a, Matrix b)
         {
             var numberOfRows = a.NumberOfRows;
             var numberOfColumns = a.NumberOfColumns;
-            var matrix = new T[numberOfRows, numberOfColumns];
+            var matrix = new double[numberOfRows, numberOfColumns];
             for (int i = 0; i < numberOfRows; i++)
             {
                 for (int j = 0; j < numberOfColumns; j++)
                 {
-                    matrix[i, j] = (dynamic)a.MatrixValues[i, j] + (dynamic)b.MatrixValues[i, j];
+                    matrix[i, j] = a.MatrixValues[i, j] + b.MatrixValues[i, j];
                 }
             }
             return matrix;
         }
 
-        private static T[,] Subtract(Matrix<T> a, Matrix<T> b)
-        {
-            var numberOfRows = a.NumberOfRows;
-            var numberOfColumns = a.NumberOfColumns;
-            var matrix = new T[numberOfRows, numberOfColumns];
-            for (int i = 0; i < numberOfRows; i++)
-            {
-                for (int j = 0; j < numberOfColumns; j++)
-                {
-                    matrix[i, j] = (dynamic)a.MatrixValues[i, j] - (dynamic)b.MatrixValues[i, j];
-                }
-            }
-            return matrix;
-        }
-
-        public T[] GaussWithoutChoice(T[] vector)
+        public double[] GaussWithoutChoice(double[] vector)
         {
             SetTempMatrix();
-            var res = new T[NumberOfRows];
+            var res = new double[NumberOfRows];
 
             for (int i = 0; i < NumberOfRows - 1; i++)
             {
                 for (int j = i + 1; j < NumberOfRows; j++)
                 {
-                    T multiplier = (dynamic) TempMatrixValues[j, i] / (dynamic)TempMatrixValues[i, i] * (-1);
+                    double multiplier = TempMatrixValues[j, i] / TempMatrixValues[i, i] * (-1);
                     for (int k = i + 1; k < NumberOfRows; k++)
                     {
-                        TempMatrixValues[j, k] += multiplier * (dynamic)TempMatrixValues[i, k];
+                        TempMatrixValues[j, k] += multiplier * TempMatrixValues[i, k];
                     }
-                    vector[j] += (dynamic)vector[i] * multiplier;
+                    vector[j] += vector[i] * multiplier;
                 }
             }
 
             for (int i = NumberOfRows - 1; i >= 0; i--)
             {
-                T sum = (dynamic)vector[i];
+                double sum = vector[i];
                 for (int j = NumberOfRows - 1; j >= i + 1; j--)
                 {
-                    sum -= (dynamic)TempMatrixValues[i, j] * res[j];
+                    sum -= TempMatrixValues[i, j] * res[j];
                 }
-                res[i] = sum / (dynamic)TempMatrixValues[i, i];
+                res[i] = sum / TempMatrixValues[i, i];
             }
 
             return res;
         }
 
-        public T[] GaussWithPartialPivot(T[] vector)
+        public double[] GaussWithPartialPivot(double[] vector)
         {
             SetTempMatrix();
             var currentRow = 0;
@@ -195,7 +164,7 @@ namespace MatrixCalculator
             return GetResultsAfterGauss(vector);
         }
 
-        public T[] GaussWithCompletePivot(T[] vector)
+        public double[] GaussWithCompletePivot(double[] vector)
         {
             SetTempMatrix();
             var vectorHistory = Enumerable.Range(1, vector.Length).ToArray();
@@ -230,7 +199,7 @@ namespace MatrixCalculator
             return vectorChange;
         }
 
-        public void SwapRows(T[] vector, int numberOfFirstRow, int numberOfSecondRow)
+        public void SwapRows(double[] vector, int numberOfFirstRow, int numberOfSecondRow)
         {
             for (int i = 0; i < NumberOfColumns; i++)
             {
@@ -243,24 +212,24 @@ namespace MatrixCalculator
             vector[numberOfSecondRow] = oldValue;
         }
 
-        private T[] GetResultsAfterGauss(T[] vector)
+        private double[] GetResultsAfterGauss(double[] vector)
         {
-            var resultsVector = new T[vector.Length];
+            var resultsVector = new double[vector.Length];
             for (int i = vector.Length - 1; i >= 0; i--)
             {
                 int j = i;
                 var numerator = vector[i];
                 while (j < NumberOfColumns - 1)
                 {
-                    numerator -= (dynamic)TempMatrixValues[i, j + 1] * resultsVector[j + 1];
+                    numerator -= TempMatrixValues[i, j + 1] * resultsVector[j + 1];
                     j++;
                 }
-                resultsVector[i] = (dynamic) numerator / TempMatrixValues[i, i];
+                resultsVector[i] =  numerator / TempMatrixValues[i, i];
             }
             return resultsVector;
         }
 
-        private T[] GetProperVector(T[] vector, int[] vectorHistory)
+        private double[] GetProperVector(double[] vector, int[] vectorHistory)
         {
             var resultsVector = GetResultsAfterGauss(vector);
             for (int i = 0; i < vector.Length; i++)
@@ -295,7 +264,7 @@ namespace MatrixCalculator
             {
                 for (int j = startingPoint; j < NumberOfColumns; j++)
                 {
-                    if ((dynamic)TempMatrixValues[i, j] > TempMatrixValues[result.row, result.column])
+                    if (TempMatrixValues[i, j] > TempMatrixValues[result.row, result.column])
                     {
                         result = (i, j);
                     }
@@ -306,11 +275,11 @@ namespace MatrixCalculator
 
         private int FindIndexOfRowWithGreatestNumberInGivenColumn(int rowNumber, int columnNumber)
         {
-            var greatestColumn = (dynamic)TempMatrixValues[rowNumber, columnNumber];
+            var greatestColumn = TempMatrixValues[rowNumber, columnNumber];
             int index = rowNumber;
             for (int i = rowNumber; i < NumberOfRows; i++)
             {
-                if ((dynamic)TempMatrixValues[i, columnNumber] > (dynamic)greatestColumn)
+                if (TempMatrixValues[i, columnNumber] > greatestColumn)
                 {
                     greatestColumn = TempMatrixValues[i, columnNumber];
                     index = i;
@@ -319,7 +288,7 @@ namespace MatrixCalculator
             return index;
         }
 
-        public void ResetAllColumnsBelow(T[] vector, int rowNumber, int columnNumber)
+        public void ResetAllColumnsBelow(double[] vector, int rowNumber, int columnNumber)
         {
             for (int i = rowNumber + 1; i < NumberOfRows; i++)
             {
@@ -332,9 +301,91 @@ namespace MatrixCalculator
             }
         }
 
-        private void SetTempMatrix()
+        public double[] JacobyMethod(double[] vectorB, int numberOfIterations)
         {
-            TempMatrixValues = (T[,])MatrixValues.Clone();
+            SetTempMatrix();
+            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); //actually D^-1 
+            Matrix LU = new Matrix(new double[NumberOfColumns, NumberOfRows]); //L+U
+            double[] x1 = new double[NumberOfColumns];
+            double[] x2 = new double[NumberOfColumns];
+
+            for (int i = 0; i < NumberOfColumns; i++)
+            {
+                for (int j = 0; j < NumberOfColumns; j++)
+                {
+                    if (i == j)
+                    {
+                        D.MatrixValues[i, i] = InverseNumber(TempMatrixValues[i, i]);
+                        LU.MatrixValues[i, i] = 0;
+                    }
+                    else
+                    {
+                        D.MatrixValues[i, j] = 0;
+                        LU.MatrixValues[i, j] = -TempMatrixValues[i, j];
+                    }
+                }
+            }
+
+            for (int i = 0; i < numberOfIterations; i++)
+            {
+                x2 = AddVectorToVector(D * LU * x1,  D * vectorB);
+
+                for (int j = 0; j < x1.Length; j++)
+                {
+                    x1[j] = x2[j];
+                }
+            }
+            return x1;
+        }
+
+        public double[] GaussSeidelMethod(double[] vectorB, int numberOfIterations)
+        {
+            SetTempMatrix();
+            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]);
+            Matrix DL = new Matrix(new double[NumberOfColumns, NumberOfRows]); //(D-L)^-1
+            double[] x1 = new double[NumberOfColumns];
+            double[] x2 = new double[NumberOfColumns];
+
+            for (int i = 0; i < NumberOfColumns; i++)
+            {
+                for (int j = 0; j < NumberOfColumns; j++)
+                {
+                    if (i == j)
+                    {
+                        DL.MatrixValues[i, i] = InverseNumber(TempMatrixValues[i, i]);
+                        U.MatrixValues[i, i] = 0;
+                    }
+                    else if (i > j)
+                    {
+                        DL.MatrixValues[i, j] = InverseNumber(TempMatrixValues[i, j]);
+                        U.MatrixValues[i, j] = 0;
+                    }
+                    else
+                    {
+                        DL.MatrixValues[i, j] = 0;
+                        U.MatrixValues[i, j] = -TempMatrixValues[i, j];
+                    }
+                }
+            }
+
+            for (int i = 0; i < numberOfIterations; i++)
+            {
+                x2 = AddVectorToVector(DL * U * x1, DL * vectorB);
+
+                for (int j = 0; j < x1.Length; j++)
+                {
+                    x1[j] = x2[j];
+                }
+            }
+            return x1;
+        }
+
+        private double InverseNumber(double x)
+        {
+            if (Math.Abs(x) < 0.0000000000001)
+                return 0;
+
+            return 1 / x;
         }
     }
 }

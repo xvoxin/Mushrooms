@@ -1,23 +1,24 @@
 ﻿using System;
 using System.IO;
+using MushroomsCs;
 
 namespace MatrixCalculator
 {
-    public class File<T> where T: new()
+    public class File
     {
-        public void WriteToFile(Matrix<T> matrix, int size, StreamWriter sw)
+        public void WriteToFile(Matrix myMatrix, int size, StreamWriter sw)
         {
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    sw.Write(matrix.MatrixValues[i, j] + " ");
+                    sw.Write(myMatrix.MatrixValues[i, j] + " ");
                 }
             }
             sw.WriteLine();
         }
 
-        public void WriteToFile(T[] vector, int size, StreamWriter sw)
+        public void WriteToFile(double[] vector, int size, StreamWriter sw)
         {
             for (int i = 0; i < size; i++)
             {
@@ -26,9 +27,9 @@ namespace MatrixCalculator
             sw.WriteLine();
         }
 
-        public T[] ReadVectorFromFile(int size, StreamReader sr)
+        public double[] ReadVectorFromFile(int size, StreamReader sr)
         {
-            var vector = new T[size];
+            var vector = new double[size];
 
             string line = "";
 
@@ -46,9 +47,9 @@ namespace MatrixCalculator
             return vector;
         }
 
-        public T[,] ReadMatrixFromFile(int size, StreamReader sr)
+        public double[,] ReadMatrixFromFile(int size, StreamReader sr)
         {
-            T[,] matrix = new T[size, size];
+            double[,] matrix = new double[size, size];
 
             string line = "";
             line = sr.ReadLine();
@@ -59,28 +60,20 @@ namespace MatrixCalculator
                 for (int j = 0; j < size; j++)
                 {
                     int splitNumber = size * i + j;
-
-                    if (matrix is double[,])
-                        matrix[i, j] = (dynamic) double.Parse(splitLine[splitNumber], System.Globalization.CultureInfo.InvariantCulture);
-                    if (matrix is float[,])
-                        matrix[i, j] = (dynamic)float.Parse(splitLine[splitNumber], System.Globalization.CultureInfo.InvariantCulture);
+                    matrix[i, j] = double.Parse(splitLine[splitNumber], System.Globalization.CultureInfo.InvariantCulture);
                 }
             }
             return matrix;
         }
 
-        public T[] FillVectorWithRandom(int size)
+        public double[] FillVectorWithRandom(int size)
         {
-            var vector = new T[size];
+            var vector = new double[size];
             var random = new Random();
 
             for (int i = 0; i < size; i++)
             {
-                if(vector is float[])
-                    vector[i] = (dynamic)(float)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
-
-                if (vector is double[])
-                    vector[i] = (dynamic)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
+                vector[i] = (dynamic)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
             }
 
             return vector;
