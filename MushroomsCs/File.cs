@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using MushroomsCs.Models;
 
 namespace MushroomsCs
 {
     public class File
     {
+        private const string DataFileName = "SampleData.txt";
+
         public void WriteToFile(Matrix myMatrix, int size, StreamWriter sw)
         {
             for (int i = 0; i < size; i++)
@@ -76,6 +81,52 @@ namespace MushroomsCs
             }
 
             return vector;
+        }
+
+        public static Board CreateBoard()
+        {
+            var data = System.IO.File.ReadAllLines(DataFileName);
+            var board = new Board
+            {
+                Size = 2 * int.Parse(data[0]) + 1,
+                Player1 = new Player
+                {
+                    Location = int.Parse(data[2].Split(' ')[0]),
+                    NumberOfCollectedMushrooms = 0
+                },
+                Player2 = new Player
+                {
+                    Location = int.Parse(data[2].Split(' ')[1]),
+                    NumberOfCollectedMushrooms = 0
+                }
+            };
+
+            var mushroomData = data[1].Split(' ');
+            var numberOfMushrooms = int.Parse(mushroomData[0]);
+            var mushrooms = new List<Mushroom>();
+            for (int i = 1; i <= numberOfMushrooms; i++)
+            {
+                mushrooms.Add(new Mushroom { Location = int.Parse(mushroomData[i]) });
+            }
+            board.Muschrooms = mushrooms;
+
+            var cube = new Cube
+            {
+                NumberOfWalls = int.Parse(data[3])
+            };
+            cube.ProbabilitiesOfCertainResult = new double[cube.NumberOfWalls];
+            cube.PossibleResults = new int[cube.NumberOfWalls];
+            var posibilites = data[4].Split(' ').Select(x => int.Parse(x)).ToList();
+            var probabilities = data[5].Split(' ').Select(x => int.Parse(x)).ToList();
+            var sumOfProbabilities = probabilities.Sum();
+            for (int i = 0; i < cube.NumberOfWalls; i++)
+            {
+                cube.PossibleResults[i] = posibilites[i];
+                cube.ProbabilitiesOfCertainResult[i] = (double)probabilities[i] / sumOfProbabilities;
+            }
+            board.Cube = cube;
+
+            return board;
         }
     }
 }
