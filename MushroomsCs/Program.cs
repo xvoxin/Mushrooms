@@ -22,14 +22,14 @@ namespace MushroomsCs
             
             Matrix mat = new Matrix(matDoubl);
 
-            var res = mat.JacobyMethod(vector, 10);
+            var res = mat.JacobyMethod(vector, 15);
 
             for (int i = 0; i < 4; i++)
             {
                 Console.Write(res[i] + " , ");
             }
 
-            var res2 = mat.GaussSeidelMethod(vector, 10);
+            var res2 = mat.GaussSeidelMethod(vector, 15);
             Console.WriteLine();
 
             for (int i = 0; i < 4; i++)

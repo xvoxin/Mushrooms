@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Linq;
+using System.Threading;
 
 namespace MushroomsCs
 {
@@ -94,16 +95,6 @@ namespace MushroomsCs
             return result;
         }
 
-        private static double[] AddVectorToVector(double[] a, double[] b)
-        {
-            double[] ret = new double[a.Length];
-            for(int i = 0; i < a.Length; i++)
-            {
-                ret[i] = a[i] + b[i];
-            }
-            return ret;
-        }
-
         private static double[,] Add(Matrix a, Matrix b)
         {
             var numberOfRows = a.NumberOfRows;
@@ -119,6 +110,25 @@ namespace MushroomsCs
             return matrix;
         }
 
+        private static double[] AddVectors(double[] a, double[] b)
+        {
+            double[] ret = new double[a.Length];
+            for(int i = 0; i < a.Length; i++)
+            {
+                ret[i] = a[i] + b[i];
+            }
+            return ret;
+        }
+
+        private static double[] SubtractVectors(double[] a, double[] b)
+        {
+            double[] ret = new double[a.Length];
+            for (int i = 0; i < a.Length; i++)
+            {
+                ret[i] = a[i] - b[i];
+            }
+            return ret;
+        }
         public double[] GaussWithoutChoice(double[] vector)
         {
             SetTempMatrix();
@@ -325,58 +335,85 @@ namespace MushroomsCs
                     }
                 }
             }
-
+            Console.WriteLine("==========================================");
             for (int i = 0; i < numberOfIterations; i++)
             {
-                x2 = AddVectorToVector(D * LU * x1,  D * vectorB);
+                x2 = D * AddVectors(LU * x1, vectorB);
 
                 for (int j = 0; j < x1.Length; j++)
                 {
                     x1[j] = x2[j];
                 }
+                for (int j = 0; j < x1.Length; j++)
+                {
+                    Console.Write(x1[j] + " ");
+                }
+                Console.WriteLine();
             }
+            Console.WriteLine("==========================================");
+            
             return x1;
         }
 
-        public double[] GaussSeidelMethod(double[] vectorB, int numberOfIterations)
+        public double[] GaussSeidelMethod(double[] vectorB, int numberOfIterations) 
         {
             SetTempMatrix();
-            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]);
-            Matrix DL = new Matrix(new double[NumberOfColumns, NumberOfRows]); //(D-L)^-1
+            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]); //-U
+            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); //D^-1
+            Matrix L = new Matrix(new double[NumberOfColumns, NumberOfRows]); //-L
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
 
-            for (int i = 0; i < NumberOfColumns; i++)
+            for (int i = 0; i < NumberOfRows; i++)
             {
                 for (int j = 0; j < NumberOfColumns; j++)
                 {
                     if (i == j)
                     {
-                        DL.MatrixValues[i, i] = InverseNumber(TempMatrixValues[i, i]);
-                        U.MatrixValues[i, i] = 0;
+                        D.MatrixValues[i, j] = InverseNumber(TempMatrixValues[i, j]);
                     }
                     else if (i > j)
                     {
-                        DL.MatrixValues[i, j] = InverseNumber(TempMatrixValues[i, j]);
-                        U.MatrixValues[i, j] = 0;
+                        L.MatrixValues[i, j] = TempMatrixValues[i, j];
                     }
-                    else
+                    else if (i < j)
                     {
-                        DL.MatrixValues[i, j] = 0;
-                        U.MatrixValues[i, j] = -TempMatrixValues[i, j];
+                        U.MatrixValues[i, j] = TempMatrixValues[i, j];
                     }
                 }
             }
-
-            for (int i = 0; i < numberOfIterations; i++)
+            Console.WriteLine("==========================================");
+            for (int k = 0; k < numberOfIterations; k++)
             {
-                x2 = AddVectorToVector(DL * U * x1, DL * vectorB);
+                //x2 = AddVectors(DL * U * x1, DL * vectorB);
+
+//                var temp = AddVectors(vectorB, L * x1);
+//                x2 = D * AddVectors(temp, U * x1);
+//
+//                for (int j = 0; j < x1.Length; j++)
+//                {
+//                    x1[j] = x2[j];
+//                }
+                for (int i = 0; i < x1.Length; i++)
+                {
+                    x1[i] = vectorB[i] * D.MatrixValues[i, i];
+                    for (int j = 0; j < i; j++)
+                    {
+                        x1[i] -= D.MatrixValues[i,i] * L.MatrixValues[i, j] * x1[j];
+                    }
+                    for (int j = i + 1; j < x1.Length; j++)
+                    {
+                        x1[i] -= D.MatrixValues[i, i] * U.MatrixValues[i, j] * x1[j];
+                    }
+                }
 
                 for (int j = 0; j < x1.Length; j++)
                 {
-                    x1[j] = x2[j];
+                    Console.Write(x1[j] + " ");
                 }
+                Console.WriteLine();
             }
+            Console.WriteLine("==========================================");
             return x1;
         }
 
