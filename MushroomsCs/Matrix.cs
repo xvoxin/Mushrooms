@@ -1,7 +1,5 @@
 ﻿using System;
-using System.CodeDom;
 using System.Linq;
-using System.Threading;
 
 namespace MushroomsCs
 {
@@ -264,7 +262,7 @@ namespace MushroomsCs
                     resultsVector[indexToReplace] = tempValue;
                 }
             }
-            return resultsVector; ;
+            return resultsVector;
         }
 
         private (int row, int column) GetGreatestElementPosition(int startingPoint)
