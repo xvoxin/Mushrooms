@@ -51,7 +51,7 @@
     <Compile Include="File.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Propability.cs" />
+    <Compile Include="Probability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -33,9 +33,19 @@ namespace MushroomsCs
 //                Console.Write(res2[i] + " , ");
 //            }
 
-            Propability prob = new Propability();
+            Probability prop = new Probability();
 
-            prob.CreateMatrixWithPropability();
+            prop.CreateMatrixWithPropability();
+
+            for (int i = 0; i < 16; i++)
+            {
+                for (int j = 0; j < 16; j++)
+                {
+                    Console.Write(prop.ProbMatrix[i, j] + "\t");
+                }
+                Console.Write(prop.VectorB[i]);
+                Console.WriteLine();
+            }
             Console.ReadKey();
         }
     }

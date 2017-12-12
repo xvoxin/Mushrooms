@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Dynamic;
-using System.Globalization;
-using System.Security.Policy;
 
 namespace MushroomsCs
 {
-    public class Propability
+    public class Probability
     {
-        public double[,] CreateMatrixWithPropability()
+        public double[,] ProbMatrix;
+        public double[] VectorB;
+
+        public void CreateMatrixWithPropability()
         {
             int mapLength = 5;
             bool isQubeEqual = true;
@@ -22,12 +22,10 @@ namespace MushroomsCs
 
             int possibility = (mapLength - 1) * (mapLength - 1);
 
+            ProbMatrix = new double[possibility, possibility];
+            VectorB = new double[possibility];
+
             Pi[] piTable = new Pi[possibility];
-
-            double[,] resMatrix = new double[possibility, possibility];
-            double[] vectorB = new double[possibility];
-
-            //i++;
 
             for (int k = playerOnePosition; k <= playerTwoPosition; k++) //all possibilities 
             {
@@ -81,7 +79,6 @@ namespace MushroomsCs
                     if (notNullTable[j] == false)
                     {
                         flag = false;
-                        Console.WriteLine(j + " brejk");
                         break;
                     }
                     flag = true;
@@ -92,11 +89,27 @@ namespace MushroomsCs
             {
                 Console.WriteLine(piTable[j].IsPlayerOneTurn + " - P(" + piTable[j].PlayerOnePosition + "," + piTable[j].PlayerTwoPosition + ")");
             }
-            return null;
+
+            for (int x = 0; x < possibility; x++)
+            {
+                ProbMatrix[x, x] = 1;
+                foreach (int t in piTable[x].NextPlayerMoveId)
+                {
+                    if (t == -1 && piTable[x].IsPlayerOneTurn == true)
+                    {
+                        VectorB[x] = qubePropability;
+                    }
+                    else if(t == -1 && piTable[x].IsPlayerOneTurn == false) { } //not nice i know it
+                    else
+                    {
+                        ProbMatrix[x, t] = -qubePropability;
+                    }
+                }
+            }
         }
     }
 
-class Pi
+    class Pi
     {
         public int Id;
         public int PlayerOnePosition;
@@ -126,10 +139,10 @@ class Pi
                 {
                     for (int j = 0; j < pis.Length; j++)
                     {
-                        if (IsPlayerOneTurn == true)
+                        if (IsPlayerOneTurn == false)
                         {
                             if (pis[j].PlayerOnePosition == PlayerOnePosition
-                                && pis[j].PlayerTwoPosition == CheckCosTam(PlayerTwoPosition, _qubeValues[i]))
+                                && pis[j].PlayerTwoPosition == CheckIsInRange(PlayerTwoPosition, _qubeValues[i]))
                             {
                                 NextPlayerMoveId[i] = pis[j].Id;
                             }
@@ -140,7 +153,7 @@ class Pi
                         }
                         else
                         {
-                            if (pis[j].PlayerOnePosition == CheckCosTam(PlayerOnePosition,  _qubeValues[i])
+                            if (pis[j].PlayerOnePosition == CheckIsInRange(PlayerOnePosition,  _qubeValues[i])
                                 && pis[j].PlayerTwoPosition == PlayerTwoPosition)
                             {
                                 NextPlayerMoveId[i] = pis[j].Id;
@@ -157,7 +170,7 @@ class Pi
             return false;
         }
 
-        private int CheckCosTam(int pos, int qube)
+        private int CheckIsInRange(int pos, int qube)
         {
             int range = (_mapSize - 1) / 2;
             int ret = 0;
@@ -174,7 +187,6 @@ class Pi
             {
                 ret = pos + qube;
             }
-            Console.WriteLine(ret);
             return ret;
         }
     }
