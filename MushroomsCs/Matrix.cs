@@ -333,7 +333,6 @@ namespace MushroomsCs
                     }
                 }
             }
-            Console.WriteLine("==========================================");
             for (int i = 0; i < numberOfIterations; i++)
             {
                 x2 = D * AddVectors(LU * x1, vectorB);
@@ -344,11 +343,8 @@ namespace MushroomsCs
                 }
                 for (int j = 0; j < x1.Length; j++)
                 {
-                    Console.Write(x1[j] + " ");
                 }
-                Console.WriteLine();
             }
-            Console.WriteLine("==========================================");
             
             return x1;
         }
@@ -380,7 +376,6 @@ namespace MushroomsCs
                     }
                 }
             }
-            Console.WriteLine("==========================================");
             for (int k = 0; k < numberOfIterations; k++)
             {
                 //x2 = AddVectors(DL * U * x1, DL * vectorB);
@@ -407,11 +402,8 @@ namespace MushroomsCs
 
                 for (int j = 0; j < x1.Length; j++)
                 {
-                    Console.Write(x1[j] + " ");
                 }
-                Console.WriteLine();
             }
-            Console.WriteLine("==========================================");
             return x1;
         }
 

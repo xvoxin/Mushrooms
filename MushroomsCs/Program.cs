@@ -35,17 +35,32 @@ namespace MushroomsCs
 
             Probability prop = new Probability();
 
-            prop.CreateMatrixWithPropability();
+            prop.CreateMatrixWithProbability();
 
-            for (int i = 0; i < 16; i++)
-            {
-                for (int j = 0; j < 16; j++)
-                {
-                    Console.Write(prop.ProbMatrix[i, j] + "\t");
-                }
-                Console.Write(prop.VectorB[i]);
-                Console.WriteLine();
-            }
+//            for (int i = 0; i < 16; i++)
+//            {
+//                for (int j = 0; j < 16; j++)
+//                {
+//                    Console.Write(prop.ProbMatrix[i, j] + "\t");
+//                }
+//                Console.Write(prop.VectorB[i]);
+//                Console.WriteLine();
+//            }
+
+            Matrix matrix = new Matrix(prop.ProbMatrix);
+
+            var gauss1 = matrix.GaussWithoutChoice((double[])prop.VectorB.Clone());
+            var gauss2 = matrix.GaussWithPartialPivot((double[])prop.VectorB.Clone());
+            var gauss3 = matrix.GaussWithCompletePivot((double[])prop.VectorB.Clone());
+            var jacoby = matrix.JacobyMethod((double[])prop.VectorB.Clone(), 50);
+            var seidel = matrix.GaussSeidelMethod((double[])prop.VectorB.Clone(), 50);
+
+            Console.WriteLine(gauss1[0]);
+            Console.WriteLine(gauss2[0]);
+            Console.WriteLine(gauss3[0]);
+            Console.WriteLine(jacoby[0]);
+            Console.WriteLine(seidel[0]);
+
             Console.ReadKey();
         }
     }
