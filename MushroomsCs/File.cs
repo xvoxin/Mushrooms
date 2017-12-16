@@ -8,7 +8,7 @@ namespace MushroomsCs
 {
     public class File
     {
-        private const string DataFileName = "SampleData.txt";
+        private const string DataFileName = "SampleData";
 
         public void WriteToFile(Matrix myMatrix, int size, StreamWriter sw)
         {
@@ -31,6 +31,11 @@ namespace MushroomsCs
             sw.WriteLine();
         }
 
+        public void WriteToFile(int x, StreamWriter sw)
+        {
+            sw.Write(x);
+        }
+
         public double[] ReadVectorFromFile(int size, StreamReader sr)
         {
             var vector = new double[size];
@@ -42,10 +47,7 @@ namespace MushroomsCs
             
             for (int j = 0; j < size; j++)
             {
-                if(vector is double[])
-                    vector[j] = (dynamic) double.Parse(splitLine[j], System.Globalization.CultureInfo.InvariantCulture);
-                else if (vector is float[])
-                    vector[j] = (dynamic) float.Parse(splitLine[j], System.Globalization.CultureInfo.InvariantCulture);
+                vector[j] = double.Parse(splitLine[j], System.Globalization.CultureInfo.InvariantCulture);
             }
 
             return vector;
@@ -77,15 +79,15 @@ namespace MushroomsCs
 
             for (int i = 0; i < size; i++)
             {
-                vector[i] = (dynamic)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
+                vector[i] = random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
             }
 
             return vector;
         }
 
-        public static Board CreateBoard()
+        public static Board CreateBoard(int nr)
         {
-            var data = System.IO.File.ReadAllLines(DataFileName);
+            var data = System.IO.File.ReadAllLines(DataFileName + nr + ".txt");
             var board = new Board
             {
                 Size = 2 * int.Parse(data[0]) + 1,
