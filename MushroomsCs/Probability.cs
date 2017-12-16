@@ -8,15 +8,9 @@ namespace MushroomsCs
         public double[,] ProbMatrix;
         public double[] VectorB;
 
-        public void CreateMatrixWithProbability()
+        public void CreateMatrixWithProbability(int mapLength, int playerOnePosition, int playerTwoPosition, 
+            int[] qubeValues, double[] qubePropabilities)
         {
-            int mapLength = 5;
-
-            double[] qubePropabilities = {1d / 3d, 1d / 3d, 1d / 3d};
-            int[] qubeValues = {-1, 0, 1};
-
-            int playerOnePosition = -2;
-            int playerTwoPosition = 2;
 
             int i = 0;
             int possibility = (mapLength - 1) * (mapLength - 1);
@@ -55,7 +49,7 @@ namespace MushroomsCs
             {
                 for (int j = 0; j < possibility; j++)
                 {
-                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true) == true)
+                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true))
                     {
                         notNullTable[j] = true;
                         if (piTable[j].IsPlayerOneTurn == true)
@@ -106,7 +100,7 @@ namespace MushroomsCs
                     pi[j] = piTable[k].Clone();
                     pi[j].IsPlayerOneTurn = !piTable[k].IsPlayerOneTurn;
                     pi[j].Id += possibility;
-                    Console.WriteLine(piTable[k].IsPlayerOneTurn);
+                    //Console.WriteLine(piTable[k].IsPlayerOneTurn);
                     k++;
                 }
                 for (int j = possibility; j < possibility * 2; j++)
@@ -119,9 +113,9 @@ namespace MushroomsCs
             for (int j = 0; j < possibility; j++)
             {
                 if (hasZero && j < possibility / 2)
-                    pi[j] = (Pi)piTable[j].Clone();
+                    pi[j] = piTable[j].Clone();
                 else if(!hasZero)
-                    pi[j] = (Pi)piTable[j].Clone();
+                    pi[j] = piTable[j].Clone();
             }
 
             for (int j = 0; j < possibility; j++)
@@ -141,10 +135,10 @@ namespace MushroomsCs
             ProbMatrix = new double[possibility, possibility];
             VectorB = new double[possibility];
 
-            for (int j = 0; j < possibility; j++)
-            {
-                Console.WriteLine(pi[j].IsPlayerOneTurn + " - P(" + pi[j].PlayerOnePosition + "," + pi[j].PlayerTwoPosition + ")");
-            }
+//            for (int j = 0; j < possibility; j++)
+//            {
+//                Console.WriteLine(pi[j].IsPlayerOneTurn + " - P(" + pi[j].PlayerOnePosition + "," + pi[j].PlayerTwoPosition + ")");
+//            }
 
             for (int x = 0; x < possibility; x++)
             {
@@ -279,7 +273,7 @@ namespace MushroomsCs
         private int CheckIsInRange(int pos, int qube)
         {
             int range = (_mapSize - 1) / 2;
-            int ret = 0;
+            int ret;
 
             if (pos + qube > range)
             {

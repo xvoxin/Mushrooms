@@ -341,9 +341,6 @@ namespace MushroomsCs
                 {
                     x1[j] = x2[j];
                 }
-                for (int j = 0; j < x1.Length; j++)
-                {
-                }
             }
             
             return x1;
@@ -378,15 +375,6 @@ namespace MushroomsCs
             }
             for (int k = 0; k < numberOfIterations; k++)
             {
-                //x2 = AddVectors(DL * U * x1, DL * vectorB);
-
-//                var temp = AddVectors(vectorB, L * x1);
-//                x2 = D * AddVectors(temp, U * x1);
-//
-//                for (int j = 0; j < x1.Length; j++)
-//                {
-//                    x1[j] = x2[j];
-//                }
                 for (int i = 0; i < x1.Length; i++)
                 {
                     x1[i] = vectorB[i] * D.MatrixValues[i, i];
@@ -398,10 +386,6 @@ namespace MushroomsCs
                     {
                         x1[i] -= D.MatrixValues[i, i] * U.MatrixValues[i, j] * x1[j];
                     }
-                }
-
-                for (int j = 0; j < x1.Length; j++)
-                {
                 }
             }
             return x1;
