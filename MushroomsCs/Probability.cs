@@ -147,7 +147,6 @@ namespace MushroomsCs
                     }
                 }
             }
-            Console.WriteLine("Player one won " + counter + " times");
         }
     }
 

@@ -397,5 +397,18 @@ namespace MushroomsCs
 
             return 1 / x;
         }
+
+        public override string ToString()
+        {
+            var matrix = string.Empty;
+            for (int i = 0; i < MatrixValues.GetLength(0); i++)
+            {
+                for (int j = 0; j < MatrixValues.GetLength(1); j++)
+                {
+                    matrix += MatrixValues[i, j] + " ";
+                }
+            }
+            return matrix;
+        }
     }
 }
