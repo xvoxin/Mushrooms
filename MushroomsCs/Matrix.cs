@@ -336,7 +336,6 @@ namespace MushroomsCs
             for (int i = 0; i < numberOfIterations; i++)
             {
                 x2 = D * AddVectors(LU * x1, vectorB);
-
                 for (int j = 0; j < x1.Length; j++)
                 {
                     x1[j] = x2[j];

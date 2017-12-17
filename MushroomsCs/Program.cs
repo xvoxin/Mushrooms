@@ -45,13 +45,13 @@ namespace MushroomsCs
 
             stopwatch.Reset();
             stopwatch.Start();
-            var jacoby = matrix.JacobyMethod((double[]) prop.VectorB.Clone(), 50);
+            var jacoby = matrix.JacobyMethod((double[]) prop.VectorB.Clone(), 600);
             stopwatch.Stop();
             times[1] = stopwatch.Elapsed.TotalMilliseconds;
 
             stopwatch.Reset();
             stopwatch.Start();
-            var seidel = matrix.GaussSeidelMethod((double[]) prop.VectorB.Clone(), 50);
+            var seidel = matrix.GaussSeidelMethod((double[]) prop.VectorB.Clone(), 600);
             stopwatch.Stop();
             double[] output = {gauss2[0], jacoby[0], seidel[0]};
             times[2] = stopwatch.Elapsed.TotalMilliseconds;
