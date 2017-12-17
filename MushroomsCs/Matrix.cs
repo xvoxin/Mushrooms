@@ -336,6 +336,14 @@ namespace MushroomsCs
             for (int i = 0; i < numberOfIterations; i++)
             {
                 x2 = D * AddVectors(LU * x1, vectorB);
+                if (i > 10 && i % 2 == 0)
+                {
+                    if (x2[0] - x1[0] < 0.0000000000000001 && x2[0] > 0)
+                    {
+                        Console.WriteLine("Jacoby break on iteration nr - " + i);
+                        break;
+                    }
+                }
                 for (int j = 0; j < x1.Length; j++)
                 {
                     x1[j] = x2[j];
@@ -385,6 +393,18 @@ namespace MushroomsCs
                     {
                         x1[i] -= D.MatrixValues[i, i] * U.MatrixValues[i, j] * x1[j];
                     }
+                }
+                if (k > 10 && k % 2 == 0)
+                {
+                    if (x1[0] - x2[0] < 0.0000000000000001 && x2[0] > 0)
+                    {
+                        Console.WriteLine("Seidel break on iteration nr - " + k);
+                        break;
+                    }
+                }
+                for (int j = 0; j < x1.Length; j++)
+                {
+                    x2[j] = x1[j];
                 }
             }
             return x1;
