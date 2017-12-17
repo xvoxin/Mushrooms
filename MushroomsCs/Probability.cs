@@ -27,9 +27,16 @@ namespace MushroomsCs
 
             Pi[] piTable = new Pi[possibility];
 
-            for (int k = playerOnePosition; k <= playerTwoPosition; k++) //all possibilities 
+            int inc = 1;
+
+            if (playerOnePosition < playerTwoPosition)
             {
-                for (int j = playerTwoPosition; j >= playerOnePosition; j--)
+                inc = -1;
+            }
+            
+            for (int j = playerTwoPosition; -j != playerTwoPosition - inc; j += inc)
+            {
+                for (int k = playerOnePosition; -k != playerOnePosition + inc; k -= inc) //all possibilities 
                 {
                     if (j != 0 && k != 0)
                     {
@@ -49,14 +56,14 @@ namespace MushroomsCs
             {
                 for (int j = 0; j < possibility; j++)
                 {
-                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true))
+                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true) == true)
                     {
                         notNullTable[j] = true;
                         if (piTable[j].IsPlayerOneTurn == true)
                         {
                             foreach (int t in piTable[j].NextPlayerMoveId)
                             {
-                                if (t > 0 && t < possibility)
+                                if (t > 0 && t < possibility && piTable[t].IsPlayerOneTurn == null)
                                 {
                                     piTable[t].IsPlayerOneTurn = false;
                                 }
@@ -66,7 +73,7 @@ namespace MushroomsCs
                         {
                             foreach (int t in piTable[j].NextPlayerMoveId)
                             {
-                                if (t > 0 && t < possibility)
+                                if (t > 0 && t < possibility && piTable[t].IsPlayerOneTurn == null)
                                 {
                                     piTable[t].IsPlayerOneTurn = true;
                                 }
@@ -78,6 +85,7 @@ namespace MushroomsCs
                 {
                     if (notNullTable[j] == false)
                     {
+                        Console.WriteLine("a se brejkuje " + j);
                         flag = false;
                         break;
                     }
@@ -100,7 +108,6 @@ namespace MushroomsCs
                     pi[j] = piTable[k].Clone();
                     pi[j].IsPlayerOneTurn = !piTable[k].IsPlayerOneTurn;
                     pi[j].Id += possibility;
-                    //Console.WriteLine(piTable[k].IsPlayerOneTurn);
                     k++;
                 }
                 for (int j = possibility; j < possibility * 2; j++)
@@ -118,44 +125,30 @@ namespace MushroomsCs
                     pi[j] = piTable[j].Clone();
             }
 
-            for (int j = 0; j < possibility; j++)
-            {
-                foreach (var x in pi[j].QubeProbs)
-                {
-                    foreach (var y in pi[j].NextPlayerMoveId)
-                    {
-                        if (y != -1)
-                        {
-                            pi[y].Probability = x;
-                        }
-                    }
-                }
-            }
-
             ProbMatrix = new double[possibility, possibility];
             VectorB = new double[possibility];
-
-//            for (int j = 0; j < possibility; j++)
-//            {
-//                Console.WriteLine(pi[j].IsPlayerOneTurn + " - P(" + pi[j].PlayerOnePosition + "," + pi[j].PlayerTwoPosition + ")");
-//            }
-
+            int counter = 0;
             for (int x = 0; x < possibility; x++)
             {
                 ProbMatrix[x, x] = 1;
-                foreach (int t in pi[x].NextPlayerMoveId)
+                for (int j = 0; j < pi[x].NextPlayerMoveId.Length; j++)
                 {
-                    if (t == -1 && pi[x].IsPlayerOneTurn == true)
+                    var nextPlayerId = pi[x].NextPlayerMoveId[j];
+                    var prob = pi[x].QubeProbs[j];
+
+                    if (nextPlayerId == -1 && pi[x].IsPlayerOneTurn == true)
                     {
-                        VectorB[x] = pi[x].Probability;
+                        VectorB[x] = prob;
+                        counter++;
                     }
-                    else if(t == -1 && pi[x].IsPlayerOneTurn == false) { } //not nice i know it
+                    else if(nextPlayerId == -1 && pi[x].IsPlayerOneTurn == false) { } //not nice i know it
                     else
                     {
-                        ProbMatrix[x, t] = -pi[x].Probability;
+                        ProbMatrix[x, nextPlayerId] = -prob;
                     }
                 }
             }
+            Console.WriteLine("Player one won " + counter + " times");
         }
     }
 
@@ -166,8 +159,6 @@ namespace MushroomsCs
         public int PlayerTwoPosition;
         public bool? IsPlayerOneTurn;
         public int[] NextPlayerMoveId; //-1 means other player win
-        public double Probability;
-
         private readonly int _mapSize;
         private readonly int[] _qubeValues;
         public readonly double[] QubeProbs;
@@ -185,7 +176,7 @@ namespace MushroomsCs
         }
 
         public Pi(int id, int playerOnePosition, int playerTwoPosition, bool? playerTurn, int[] nextMove, 
-            int[] qubeValues, double[] qubeProbs, int mapSize, double probability)
+            int[] qubeValues, double[] qubeProbs, int mapSize)
         {
             Id = id;
 
@@ -196,7 +187,6 @@ namespace MushroomsCs
             _mapSize = mapSize;
             _qubeValues = (int[])qubeValues.Clone();
             QubeProbs = (double[])qubeProbs.Clone();
-            Probability = probability;
         }
 
         public bool SetNextMove(Pi[] pis, bool withoutZero) //1 is with, 2 is not with
@@ -293,7 +283,7 @@ namespace MushroomsCs
         public Pi Clone()
         {
             return new Pi(Id, PlayerOnePosition, PlayerTwoPosition, IsPlayerOneTurn, 
-                NextPlayerMoveId, _qubeValues, QubeProbs, _mapSize, Probability);
+                NextPlayerMoveId, _qubeValues, QubeProbs, _mapSize);
         }
     }
 }
