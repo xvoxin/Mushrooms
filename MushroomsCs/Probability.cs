@@ -85,7 +85,6 @@ namespace MushroomsCs
                 {
                     if (notNullTable[j] == false)
                     {
-                        Console.WriteLine("a se brejkuje " + j);
                         flag = false;
                         break;
                     }
@@ -148,7 +147,6 @@ namespace MushroomsCs
                     }
                 }
             }
-            Console.WriteLine("Player one won " + counter + " times");
         }
     }
 

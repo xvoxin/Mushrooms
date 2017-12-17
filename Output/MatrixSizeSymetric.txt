@@ -1,0 +1,24 @@
+Board size: 4
+128
+Board size: 5
+200
+Board size: 6
+288
+Board size: 7
+392
+Board size: 8
+512
+Board size: 9
+648
+Board size: 4
+128
+Board size: 5
+200
+Board size: 6
+288
+Board size: 7
+392
+Board size: 8
+512
+Board size: 9
+648
