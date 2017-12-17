@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compare.cs" />
     <Compile Include="Models\Board.cs" />
     <Compile Include="File.cs" />
     <Compile Include="Matrix.cs" />
