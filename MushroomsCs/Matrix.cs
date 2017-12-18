@@ -312,8 +312,8 @@ namespace MushroomsCs
         public double[] JacobyMethod(double[] vectorB, int numberOfIterations)
         {
             SetTempMatrix();
-            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); //actually D^-1 
-            Matrix LU = new Matrix(new double[NumberOfColumns, NumberOfRows]); //L+U
+            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]);
+            Matrix LU = new Matrix(new double[NumberOfColumns, NumberOfRows]);
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
 
@@ -356,9 +356,9 @@ namespace MushroomsCs
         public double[] GaussSeidelMethod(double[] vectorB, int numberOfIterations) 
         {
             SetTempMatrix();
-            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]); //-U
-            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); //D^-1
-            Matrix L = new Matrix(new double[NumberOfColumns, NumberOfRows]); //-L
+            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]); 
+            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); 
+            Matrix L = new Matrix(new double[NumberOfColumns, NumberOfRows]);
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
 

@@ -40,9 +40,7 @@ namespace MushroomsCs
         {
             var vector = new double[size];
 
-            string line = "";
-
-            line = sr.ReadLine();
+            var line = sr.ReadLine();
             string[] splitLine = line.Split(' ');
             
             for (int j = 0; j < size; j++)
@@ -57,8 +55,7 @@ namespace MushroomsCs
         {
             double[,] matrix = new double[size, size];
 
-            string line = "";
-            line = sr.ReadLine();
+            var line = sr.ReadLine();
             string[] splitLine = line.Split(' ');
 
             for (int i = 0; i < size; i++)

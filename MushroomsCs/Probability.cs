@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace MushroomsCs
 {
@@ -36,7 +35,7 @@ namespace MushroomsCs
             
             for (int j = playerTwoPosition; -j != playerTwoPosition - inc; j += inc)
             {
-                for (int k = playerOnePosition; -k != playerOnePosition + inc; k -= inc) //all possibilities 
+                for (int k = playerOnePosition; -k != playerOnePosition + inc; k -= inc)
                 {
                     if (j != 0 && k != 0)
                     {
@@ -56,7 +55,7 @@ namespace MushroomsCs
             {
                 for (int j = 0; j < possibility; j++)
                 {
-                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true) == true)
+                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true))
                     {
                         notNullTable[j] = true;
                         if (piTable[j].IsPlayerOneTurn == true)
@@ -98,7 +97,7 @@ namespace MushroomsCs
             {
                 for (int j = 0; j < possibility; j++)
                 {
-                    pi[j] = new Pi(-10, 0, 0, qubeValues, qubePropabilities, 0); //temporary
+                    pi[j] = new Pi(-10, 0, 0, qubeValues, qubePropabilities, 0);
                 }
 
                 int k = 0;
@@ -126,7 +125,6 @@ namespace MushroomsCs
 
             ProbMatrix = new double[possibility, possibility];
             VectorB = new double[possibility];
-            int counter = 0;
             for (int x = 0; x < possibility; x++)
             {
                 ProbMatrix[x, x] = 1;
@@ -138,9 +136,8 @@ namespace MushroomsCs
                     if (nextPlayerId == -1 && pi[x].IsPlayerOneTurn == true)
                     {
                         VectorB[x] = prob;
-                        counter++;
                     }
-                    else if(nextPlayerId == -1 && pi[x].IsPlayerOneTurn == false) { } //not nice i know it
+                    else if(nextPlayerId == -1 && pi[x].IsPlayerOneTurn == false) { }
                     else
                     {
                         ProbMatrix[x, nextPlayerId] = -prob;
@@ -156,7 +153,7 @@ namespace MushroomsCs
         public int PlayerOnePosition;
         public int PlayerTwoPosition;
         public bool? IsPlayerOneTurn;
-        public int[] NextPlayerMoveId; //-1 means other player win
+        public int[] NextPlayerMoveId;
         private readonly int _mapSize;
         private readonly int[] _qubeValues;
         public readonly double[] QubeProbs;
@@ -187,7 +184,7 @@ namespace MushroomsCs
             QubeProbs = (double[])qubeProbs.Clone();
         }
 
-        public bool SetNextMove(Pi[] pis, bool withoutZero) //1 is with, 2 is not with
+        public bool SetNextMove(Pi[] pis, bool withoutZero)
         {
             int multiply = Convert.ToInt32(withoutZero) + 1;
             int pislen = pis.Length;

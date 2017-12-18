@@ -51,7 +51,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compare.cs" />
     <Compile Include="Models\Board.cs" />
     <Compile Include="File.cs" />
     <Compile Include="Matrix.cs" />
@@ -69,9 +68,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SampleData1.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="SampleData99.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
