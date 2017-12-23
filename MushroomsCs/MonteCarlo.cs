@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MushroomsCs.Models;
 
 namespace MushroomsCs
@@ -10,14 +11,19 @@ namespace MushroomsCs
         public static double GetResultOfTheGame(Board board, Random random)
         {
             var numberOfPlayerOneWins = 0;
-            var newProbabilities = new int[board.Cube.NumberOfWalls];
-            newProbabilities[0] = (int)(board.Cube.ProbabilitiesOfCertainResult[0] * 100);
+            var numberOfElementsForArray = board.Cube.NaturalProbabilities.Sum();
+            var possibilities = new int[numberOfElementsForArray];
+            var point = 0;
+            for (int i = 0; i < board.Cube.NumberOfWalls; i++)
+            {
+                for (int j = 0; j < board.Cube.NaturalProbabilities[i]; j++)
+                {
+                    possibilities[point++] = board.Cube.PossibleResults[i];
+                }
+            }
+
             var playerOnePosition = board.Player1.Location;
             var playerTwoPosition = board.Player2.Location;
-            for (int j = 1; j < board.Cube.NumberOfWalls; j++)
-            {
-                newProbabilities[j] = (int) (board.Cube.ProbabilitiesOfCertainResult[j] * 100) + newProbabilities[j - 1];
-            }
             for (var i = 0; i < NumberOfTries; i++)
             {
                 board.Player1.Location = playerOnePosition;
@@ -26,27 +32,8 @@ namespace MushroomsCs
                 var playerOneTurn = true;
                 while (nobodyWon)
                 {
-                    var index = 0;
-                    var randomValue = random.Next(0, 100);
-                    for (int j = 1; j < board.Cube.NumberOfWalls; j++)
-                    {
-                        if (j == 0 && randomValue >= 0 && randomValue < newProbabilities[j])
-                        {
-                            index = j;
-                            break;
-                        }
-                        if (randomValue >= newProbabilities[j - 1] && randomValue < newProbabilities[j])
-                        {
-                            index = j;
-                            break;
-                        }
-                        if (j == board.Cube.NumberOfWalls - 1 && randomValue > newProbabilities[j])
-                        {
-                            index = j;
-                            break;
-                        }
-                    }
-                    board.MovePlayer(playerOneTurn, board.Cube.PossibleResults[index]);
+                    var index = random.Next(0, numberOfElementsForArray);
+                    board.MovePlayer(playerOneTurn, possibilities[index]);
                     if (playerOneTurn && board.Player1.Location == 0)
                     {
                         numberOfPlayerOneWins++;

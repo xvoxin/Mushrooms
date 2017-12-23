@@ -115,6 +115,7 @@ namespace MushroomsCs
             };
             cube.ProbabilitiesOfCertainResult = new double[cube.NumberOfWalls];
             cube.PossibleResults = new int[cube.NumberOfWalls];
+            cube.NaturalProbabilities = new int[cube.NumberOfWalls];
             var posibilites = data[4].Split(' ').Select(x => int.Parse(x)).ToList();
             var probabilities = data[5].Split(' ').Select(x => int.Parse(x)).ToList();
             var sumOfProbabilities = probabilities.Sum();
@@ -122,6 +123,7 @@ namespace MushroomsCs
             {
                 cube.PossibleResults[i] = posibilites[i];
                 cube.ProbabilitiesOfCertainResult[i] = (double)probabilities[i] / sumOfProbabilities;
+                cube.NaturalProbabilities[i] = probabilities[i];
             }
             board.Cube = cube;
 
