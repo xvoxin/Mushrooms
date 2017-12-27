@@ -6,7 +6,7 @@ namespace MushroomsCs
 {
     public static class MonteCarlo
     {
-        private const int NumberOfTries = 10000000;
+        private const int NumberOfTries = 1000000;
 
         public static double GetResultOfTheGame(Board board, Random random)
         {

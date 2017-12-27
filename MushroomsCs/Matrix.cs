@@ -348,7 +348,7 @@ namespace MushroomsCs
                 x2norm = Math.Sqrt(x2norm);
                 x1norm = Math.Sqrt(x1norm);
                 
-                if (Math.Abs(x2norm) - Math.Abs(x1norm) < 1e-18 && x2[0] > 0)
+                if (Math.Abs(x2norm) - Math.Abs(x1norm) < 1e-16 && x2[0] > 0)
                 {
                     Console.WriteLine("Jacoby break on iteration nr - " + i);
                     break;
@@ -416,7 +416,7 @@ namespace MushroomsCs
                 x2norm = Math.Sqrt(x2norm);
                 x1norm = Math.Sqrt(x1norm);
 
-                if (Math.Abs(x1norm) - Math.Abs(x2norm) < 1e-18 && x2[0] > 0)
+                if (Math.Abs(x1norm) - Math.Abs(x2norm) < 1e-16 && x2[0] > 0)
                 {
                     Console.WriteLine("Gauss Seidel breaks on iteration nr - " + k);
                     break;

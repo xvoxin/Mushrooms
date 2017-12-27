@@ -69,7 +69,7 @@ namespace MushroomsCs
                 stopwatch.Start();
                 var seidel = matrix.GaussSeidelMethod((double[])prop.VectorB.Clone(), 7000);
                 stopwatch.Stop();
-//                var monteCarlo = MonteCarlo.GetResultOfTheGame(board, random);
+                var monteCarlo = MonteCarlo.GetResultOfTheGame(board, random);
 //                double[] output = { gauss1[0], gauss2[0], gauss3[0], jacoby[0], seidel[0]};
                 times[2] = stopwatch.Elapsed.TotalMilliseconds;
 
@@ -108,7 +108,7 @@ namespace MushroomsCs
 //                Console.WriteLine($"Gauss 3: {gauss3[0]}");
                 Console.WriteLine($"Jacoby: {jacoby[0]}");
                 Console.WriteLine($"Seidel: {seidel[0]}");
-//                Console.WriteLine($"Monte Carlo: {monteCarlo}");                
+                Console.WriteLine($"Monte Carlo: {monteCarlo}");                
             }
         }
     }

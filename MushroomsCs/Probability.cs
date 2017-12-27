@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MushroomsCs
+﻿namespace MushroomsCs
 {
     public class Probability
     {
@@ -13,18 +11,8 @@ namespace MushroomsCs
 
             int i = 0;
             int possibility = (mapLength - 1) * (mapLength - 1);
-            bool hasZero = false;
 
-            foreach (var x in qubeValues)
-            {
-                if (x == 0)
-                {
-                    hasZero = true;
-                    break;
-                }
-            }
-
-            Pi[] piTable = new Pi[possibility];
+            Pi[] piTable = new Pi[possibility * 2];
 
             int inc = 1;
 
@@ -32,127 +20,65 @@ namespace MushroomsCs
             {
                 inc = -1;
             }
-            
-            for (int j = playerTwoPosition; -j != playerTwoPosition - inc; j += inc)
+            while (i < possibility * 2)
             {
-                for (int k = playerOnePosition; -k != playerOnePosition + inc; k -= inc)
+                for (int j = playerTwoPosition; -j != playerTwoPosition - inc; j += inc)
                 {
-                    if (j != 0 && k != 0)
+                    for (int k = playerOnePosition; -k != playerOnePosition + inc; k -= inc)
                     {
-                        piTable[i] = new Pi(i, k, j, qubeValues, qubePropabilities, mapLength);
-                        i++;
-                    }
-                }
-            }
-
-            piTable[0].IsPlayerOneTurn = true;
-
-            bool[] notNullTable = new bool[possibility];
-            notNullTable[0] = true;
-            bool flag = false;
-
-            while (!flag)
-            {
-                for (int j = 0; j < possibility; j++)
-                {
-                    if (piTable[j].SetNextMove((Pi[])piTable.Clone(), true))
-                    {
-                        notNullTable[j] = true;
-                        if (piTable[j].IsPlayerOneTurn == true)
+                        if (j != 0 && k != 0)
                         {
-                            foreach (int t in piTable[j].NextPlayerMoveId)
-                            {
-                                if (t > 0 && t < possibility && piTable[t].IsPlayerOneTurn == null)
-                                {
-                                    piTable[t].IsPlayerOneTurn = false;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            foreach (int t in piTable[j].NextPlayerMoveId)
-                            {
-                                if (t > 0 && t < possibility && piTable[t].IsPlayerOneTurn == null)
-                                {
-                                    piTable[t].IsPlayerOneTurn = true;
-                                }
-                            }
+                            piTable[i] = new Pi(i, k, j, qubeValues, qubePropabilities, mapLength);
+                            i++;
                         }
                     }
                 }
-                for (int j = 0; j < possibility; j++)
-                {
-                    if (notNullTable[j] == false)
-                    {
-                        flag = false;
-                        break;
-                    }
-                    flag = true;
-                }
-            }
-
-            Pi[] pi = new Pi[possibility * 2];
-
-            if (hasZero)
-            {
-                for (int j = 0; j < possibility; j++)
-                {
-                    pi[j] = new Pi(-10, 0, 0, qubeValues, qubePropabilities, 0);
-                }
-
-                int k = 0;
-                for (int j = possibility; j < possibility * 2; j++)
-                {
-                    pi[j] = piTable[k].Clone();
-                    pi[j].IsPlayerOneTurn = !piTable[k].IsPlayerOneTurn;
-                    pi[j].Id += possibility;
-                    k++;
-                }
-                for (int j = possibility; j < possibility * 2; j++)
-                {
-                    pi[j].SetNextMove((Pi[])pi.Clone(), false);
-                }
-                possibility *= 2;
             }
 
             for (int j = 0; j < possibility; j++)
             {
-                if (hasZero && j < possibility / 2)
-                    pi[j] = piTable[j].Clone();
-                else if(!hasZero)
-                    pi[j] = piTable[j].Clone();
+                piTable[j].IsPlayerOneTurn = true;
+            }
+            for (int j = possibility; j < possibility * 2; j++)
+            {
+                piTable[j].IsPlayerOneTurn = false;
             }
 
-            ProbMatrix = new double[possibility, possibility];
-            VectorB = new double[possibility];
-            for (int x = 0; x < possibility; x++)
+            for (int j = 0; j < possibility * 2; j++)
+            {
+                piTable[j].SetNextMove((Pi[])piTable.Clone());
+            }
+            
+            ProbMatrix = new double[possibility * 2, possibility * 2];
+            VectorB = new double[possibility * 2];
+            for (int x = 0; x < possibility * 2; x++)
             {
                 ProbMatrix[x, x] = 1;
-                for (int j = 0; j < pi[x].NextPlayerMoveId.Length; j++)
+                for (int j = 0; j < piTable[x].NextPlayerMoveId.Length; j++)
                 {
-                    var nextPlayerId = pi[x].NextPlayerMoveId[j];
-                    var prob = pi[x].QubeProbs[j];
+                    var nextPlayerId = piTable[x].NextPlayerMoveId[j];
+                    var prob = qubePropabilities[j];
 
-                    if (nextPlayerId == -1 && pi[x].IsPlayerOneTurn == true)
+                    if (nextPlayerId == -1 && piTable[x].IsPlayerOneTurn)
                     {
-                        VectorB[x] = prob;
+                        VectorB[x] += prob;
                     }
-                    else if(nextPlayerId == -1 && pi[x].IsPlayerOneTurn == false) { }
+                    else if(nextPlayerId == -1 && piTable[x].IsPlayerOneTurn == false) { }
                     else
                     {
-                        ProbMatrix[x, nextPlayerId] = -prob;
+                        ProbMatrix[x, nextPlayerId] += prob;
                     }
                 }
             }
         }
     }
 
-    class Pi
+    public class Pi
     {
         public int Id;
         public int PlayerOnePosition;
         public int PlayerTwoPosition;
-        public bool? IsPlayerOneTurn;
+        public bool IsPlayerOneTurn;
         public int[] NextPlayerMoveId;
         private readonly int _mapSize;
         private readonly int[] _qubeValues;
@@ -170,7 +96,7 @@ namespace MushroomsCs
             QubeProbs = (double[]) qubeProbs.Clone();
         }
 
-        public Pi(int id, int playerOnePosition, int playerTwoPosition, bool? playerTurn, int[] nextMove, 
+        public Pi(int id, int playerOnePosition, int playerTwoPosition, bool playerTurn, int[] nextMove, 
             int[] qubeValues, double[] qubeProbs, int mapSize)
         {
             Id = id;
@@ -184,75 +110,70 @@ namespace MushroomsCs
             QubeProbs = (double[])qubeProbs.Clone();
         }
 
-        public bool SetNextMove(Pi[] pis, bool withoutZero)
+        public bool SetNextMove(Pi[] pis)
         {
-            int multiply = Convert.ToInt32(withoutZero) + 1;
-            int pislen = pis.Length;
-            if (!withoutZero)
+            int pislen = pis.Length / 2;
+
+            for (int i = 0; i < _qubeValues.Length; i++)
             {
-                pislen /= 2;
-            }
-            if (IsPlayerOneTurn != null)
-            {
-                for (int i = 0; i < _qubeValues.Length; i++)
+                for (int j = 0; j < pis.Length; j++)
                 {
-                    for (int j = 0; j < pis.Length; j++)
+                    if (IsPlayerOneTurn == false)
                     {
-                        if (IsPlayerOneTurn == false)
+                        if (_qubeValues[i] == 0)
                         {
-                            if (_qubeValues[i] == 0)
+                            int temp;
+                            if (Id + pislen < pis.Length)
                             {
-                                int temp;
-                                if (Id + pis.Length < pis.Length * multiply)
-                                {
-                                    temp = Id + pislen;
-                                }
-                                else
-                                {
-                                    temp = Id - pislen;
-                                }
-                                NextPlayerMoveId[i] = temp;
+                                temp = Id + pislen;
                             }
-                            else if (pis[j].PlayerOnePosition == PlayerOnePosition
-                                && pis[j].PlayerTwoPosition == CheckIsInRange(PlayerTwoPosition, _qubeValues[i]))
+                            else
                             {
-                                NextPlayerMoveId[i] = pis[j].Id;
+                                temp = Id - pislen;
                             }
-                            else if (PlayerTwoPosition + _qubeValues[i] == 0)
-                            {
-                                NextPlayerMoveId[i] = -1;
-                            }
+                            NextPlayerMoveId[i] = temp;
                         }
-                        else
+                        else if (pis[j].PlayerOnePosition == PlayerOnePosition
+                            && pis[j].PlayerTwoPosition == CheckIsInRange(PlayerTwoPosition, _qubeValues[i])
+                            && pis[j].IsPlayerOneTurn)
                         {
-                            if (_qubeValues[i] == 0)
+                            NextPlayerMoveId[i] = pis[j].Id;
+                        }
+                        else if (PlayerTwoPosition + _qubeValues[i] == 0)
+                        {
+                            NextPlayerMoveId[i] = -1;
+                        }
+                    }
+                    else
+                    {
+                        if (_qubeValues[i] == 0)
+                        {
+                            int temp;
+                            if (Id + pislen < pis.Length)
                             {
-                                int temp;
-                                if (Id + pis.Length < pis.Length * multiply)
-                                {
-                                    temp = Id + pislen;
-                                }
-                                else
-                                {
-                                    temp = Id - pislen;
-                                }
-                                NextPlayerMoveId[i] = temp;
+                                temp = Id + pislen;
                             }
-                            else if (pis[j].PlayerOnePosition == CheckIsInRange(PlayerOnePosition,  _qubeValues[i])
-                                && pis[j].PlayerTwoPosition == PlayerTwoPosition)
+                            else
                             {
-                                NextPlayerMoveId[i] = pis[j].Id;
+                                temp = Id - pislen;
                             }
-                            else if (PlayerOnePosition + _qubeValues[i] == 0)
-                            {
-                                NextPlayerMoveId[i] = -1;
-                            }
+                            NextPlayerMoveId[i] = temp;
+                        }
+                        else if (pis[j].PlayerOnePosition == CheckIsInRange(PlayerOnePosition,  _qubeValues[i])
+                            && pis[j].PlayerTwoPosition == PlayerTwoPosition
+                            && !pis[j].IsPlayerOneTurn)
+                        {
+                            NextPlayerMoveId[i] = pis[j].Id;
+                        }
+                        else if (PlayerOnePosition + _qubeValues[i] == 0)
+                        {
+                            NextPlayerMoveId[i] = -1;
                         }
                     }
                 }
-                return true;
             }
-            return false;
+            return true;
+
         }
 
         private int CheckIsInRange(int pos, int qube)
