@@ -317,6 +317,9 @@ namespace MushroomsCs
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
 
+            double x1norm = 0;
+            double x2norm = 0;
+
             for (int i = 0; i < NumberOfColumns; i++)
             {
                 for (int j = 0; j < NumberOfColumns; j++)
@@ -336,14 +339,21 @@ namespace MushroomsCs
             for (int i = 0; i < numberOfIterations; i++)
             {
                 x2 = D * AddVectors(LU * x1, vectorB);
-                if (i > 10 && i % 2 == 0)
+                for (int j = 0; j < x2.Length; j++)
                 {
-                    if (x2[0] - x1[0] < 0.0000000000000001 && x2[0] > 0)
-                    {
-                        Console.WriteLine("Jacoby break on iteration nr - " + i);
-                        break;
-                    }
+                    x1norm += x1[j] * x1[j];
+                    x2norm += x2[j] * x2[j];
                 }
+
+                x2norm = Math.Sqrt(x2norm);
+                x1norm = Math.Sqrt(x1norm);
+                
+                if (Math.Abs(x2norm) - Math.Abs(x1norm) < 1e-18 && x2[0] > 0)
+                {
+                    Console.WriteLine("Jacoby break on iteration nr - " + i);
+                    break;
+                }
+                
                 for (int j = 0; j < x1.Length; j++)
                 {
                     x1[j] = x2[j];
@@ -361,6 +371,9 @@ namespace MushroomsCs
             Matrix L = new Matrix(new double[NumberOfColumns, NumberOfRows]);
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
+
+            double x1norm = 0;
+            double x2norm = 0;
 
             for (int i = 0; i < NumberOfRows; i++)
             {
@@ -394,14 +407,21 @@ namespace MushroomsCs
                         x1[i] -= D.MatrixValues[i, i] * U.MatrixValues[i, j] * x1[j];
                     }
                 }
-                if (k > 10 && k % 2 == 0)
+                for(int j = 0; j < x2.Length; j++)
                 {
-                    if (x1[0] - x2[0] < 0.0000000000000001 && x2[0] > 0)
-                    {
-                        Console.WriteLine("Seidel break on iteration nr - " + k);
-                        break;
-                    }
+                    x1norm += x1[j] * x1[j];
+                    x2norm += x2[j] * x2[j];
                 }
+
+                x2norm = Math.Sqrt(x2norm);
+                x1norm = Math.Sqrt(x1norm);
+
+                if (Math.Abs(x1norm) - Math.Abs(x2norm) < 1e-18 && x2[0] > 0)
+                {
+                    Console.WriteLine("Gauss Seidel breaks on iteration nr - " + k);
+                    break;
+                }
+
                 for (int j = 0; j < x1.Length; j++)
                 {
                     x2[j] = x1[j];

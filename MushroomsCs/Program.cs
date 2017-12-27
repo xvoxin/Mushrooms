@@ -49,7 +49,7 @@ namespace MushroomsCs
                 var stopwatch = new Stopwatch();
                 double[] times = new double[3];
 
-                var gauss1 = matrix.GaussWithoutChoice((double[])prop.VectorB.Clone());
+//                var gauss1 = matrix.GaussWithoutChoice((double[])prop.VectorB.Clone());
 
                 stopwatch.Reset();
                 stopwatch.Start();
@@ -57,7 +57,7 @@ namespace MushroomsCs
                 stopwatch.Stop();
                 times[0] = stopwatch.Elapsed.TotalMilliseconds;
 
-                var gauss3 = matrix.GaussWithCompletePivot((double[])prop.VectorB.Clone());
+//                var gauss3 = matrix.GaussWithCompletePivot((double[])prop.VectorB.Clone());
 
                 stopwatch.Reset();
                 stopwatch.Start();
@@ -69,46 +69,46 @@ namespace MushroomsCs
                 stopwatch.Start();
                 var seidel = matrix.GaussSeidelMethod((double[])prop.VectorB.Clone(), 7000);
                 stopwatch.Stop();
-                var monteCarlo = MonteCarlo.GetResultOfTheGame(board, random);
-                double[] output = { gauss1[0], gauss2[0], gauss3[0], jacoby[0], seidel[0]};
+//                var monteCarlo = MonteCarlo.GetResultOfTheGame(board, random);
+//                double[] output = { gauss1[0], gauss2[0], gauss3[0], jacoby[0], seidel[0]};
                 times[2] = stopwatch.Elapsed.TotalMilliseconds;
 
-                System.IO.File.AppendAllText(MatrixCsSymetric, $"{board.Size / 2}\n");
-                System.IO.File.AppendAllText(MatrixCsSymetric, matrix.ToString());
-                System.IO.File.AppendAllText(MatrixCsSymetric, "\n");
-
-                System.IO.File.AppendAllText(VectorCsSymetric, $"{board.Size / 2}\n");
-                foreach (var value in prop.VectorB)
-                {
-                    System.IO.File.AppendAllText(VectorCsSymetric, $"{value} ");
-                }
-                System.IO.File.AppendAllText(VectorCsSymetric, "\n");
-
-                System.IO.File.AppendAllText(ResCsSymetric, $"{board.Size / 2}\n");
-                foreach (var value in output)
-                {
-                    System.IO.File.AppendAllText(ResCsSymetric, $"{value} ");
-                }
-                System.IO.File.AppendAllText(ResCsSymetric, "\n");
-
-
-                System.IO.File.AppendAllText(TimeCsSymetric, $"{board.Size / 2}\n");
-                for (int i = 0; i < times.Length; i++)
-                {
-                    System.IO.File.AppendAllText(TimeCsSymetric, $"{times[i]} ");
-                }
-                System.IO.File.AppendAllText(TimeCsSymetric, "\n");
-                
-                System.IO.File.AppendAllText(MatrixSizeSymetric, $"Board size: {board.Size / 2}\n");
-                System.IO.File.AppendAllText(MatrixSizeSymetric, $"{prop.VectorB.Length}\n");
+//                System.IO.File.AppendAllText(MatrixCsSymetric, $"{board.Size / 2}\n");
+//                System.IO.File.AppendAllText(MatrixCsSymetric, matrix.ToString());
+//                System.IO.File.AppendAllText(MatrixCsSymetric, "\n");
+//
+//                System.IO.File.AppendAllText(VectorCsSymetric, $"{board.Size / 2}\n");
+//                foreach (var value in prop.VectorB)
+//                {
+//                    System.IO.File.AppendAllText(VectorCsSymetric, $"{value} ");
+//                }
+//                System.IO.File.AppendAllText(VectorCsSymetric, "\n");
+//
+//                System.IO.File.AppendAllText(ResCsSymetric, $"{board.Size / 2}\n");
+//                foreach (var value in output)
+//                {
+//                    System.IO.File.AppendAllText(ResCsSymetric, $"{value} ");
+//                }
+//                System.IO.File.AppendAllText(ResCsSymetric, "\n");
+//
+//
+//                System.IO.File.AppendAllText(TimeCsSymetric, $"{board.Size / 2}\n");
+//                for (int i = 0; i < times.Length; i++)
+//                {
+//                    System.IO.File.AppendAllText(TimeCsSymetric, $"{times[i]} ");
+//                }
+//                System.IO.File.AppendAllText(TimeCsSymetric, "\n");
+//                
+//                System.IO.File.AppendAllText(MatrixSizeSymetric, $"Board size: {board.Size / 2}\n");
+//                System.IO.File.AppendAllText(MatrixSizeSymetric, $"{prop.VectorB.Length}\n");
                 
                 Console.WriteLine($"For board of size {board.Size / 2}");
-                Console.WriteLine($"Gauss 1: {gauss1[0]}");
+//                Console.WriteLine($"Gauss 1: {gauss1[0]}");
                 Console.WriteLine($"Gauss 2: {gauss2[0]}");
-                Console.WriteLine($"Gauss 3: {gauss3[0]}");
+//                Console.WriteLine($"Gauss 3: {gauss3[0]}");
                 Console.WriteLine($"Jacoby: {jacoby[0]}");
                 Console.WriteLine($"Seidel: {seidel[0]}");
-                Console.WriteLine($"Monte Carlo: {monteCarlo}");                
+//                Console.WriteLine($"Monte Carlo: {monteCarlo}");                
             }
         }
     }
