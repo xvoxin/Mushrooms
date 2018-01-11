@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MushroomsCs.Models
 {
@@ -13,6 +12,10 @@ namespace MushroomsCs.Models
 
         public void MovePlayer(bool isPlayerOne, int numberOfMoves)
         {
+            if (numberOfMoves == 0)
+            {
+                return;
+            }
             if (isPlayerOne)
             {
                 if (Player1.Location + numberOfMoves > (Size - 1) / 2)

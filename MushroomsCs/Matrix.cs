@@ -312,10 +312,13 @@ namespace MushroomsCs
         public double[] JacobyMethod(double[] vectorB, int numberOfIterations)
         {
             SetTempMatrix();
-            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); //actually D^-1 
-            Matrix LU = new Matrix(new double[NumberOfColumns, NumberOfRows]); //L+U
+            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]);
+            Matrix LU = new Matrix(new double[NumberOfColumns, NumberOfRows]);
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
+
+            double x1norm = 0;
+            double x2norm = 0;
 
             for (int i = 0; i < NumberOfColumns; i++)
             {
@@ -333,22 +336,29 @@ namespace MushroomsCs
                     }
                 }
             }
-            Console.WriteLine("==========================================");
             for (int i = 0; i < numberOfIterations; i++)
             {
                 x2 = D * AddVectors(LU * x1, vectorB);
+                for (int j = 0; j < x2.Length; j++)
+                {
+                    x1norm += x1[j] * x1[j];
+                    x2norm += x2[j] * x2[j];
+                }
 
+                x2norm = Math.Sqrt(x2norm);
+                x1norm = Math.Sqrt(x1norm);
+                
+                if (Math.Abs(x2norm) - Math.Abs(x1norm) < 1e-16 && x2[0] > 0)
+                {
+                    Console.WriteLine("Jacoby break on iteration nr - " + i);
+                    break;
+                }
+                
                 for (int j = 0; j < x1.Length; j++)
                 {
                     x1[j] = x2[j];
                 }
-                for (int j = 0; j < x1.Length; j++)
-                {
-                    Console.Write(x1[j] + " ");
-                }
-                Console.WriteLine();
             }
-            Console.WriteLine("==========================================");
             
             return x1;
         }
@@ -356,11 +366,14 @@ namespace MushroomsCs
         public double[] GaussSeidelMethod(double[] vectorB, int numberOfIterations) 
         {
             SetTempMatrix();
-            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]); //-U
-            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); //D^-1
-            Matrix L = new Matrix(new double[NumberOfColumns, NumberOfRows]); //-L
+            Matrix U = new Matrix(new double[NumberOfColumns, NumberOfRows]); 
+            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]); 
+            Matrix L = new Matrix(new double[NumberOfColumns, NumberOfRows]);
             double[] x1 = new double[NumberOfColumns];
             double[] x2 = new double[NumberOfColumns];
+
+            double x1norm = 0;
+            double x2norm = 0;
 
             for (int i = 0; i < NumberOfRows; i++)
             {
@@ -380,18 +393,8 @@ namespace MushroomsCs
                     }
                 }
             }
-            Console.WriteLine("==========================================");
             for (int k = 0; k < numberOfIterations; k++)
             {
-                //x2 = AddVectors(DL * U * x1, DL * vectorB);
-
-//                var temp = AddVectors(vectorB, L * x1);
-//                x2 = D * AddVectors(temp, U * x1);
-//
-//                for (int j = 0; j < x1.Length; j++)
-//                {
-//                    x1[j] = x2[j];
-//                }
                 for (int i = 0; i < x1.Length; i++)
                 {
                     x1[i] = vectorB[i] * D.MatrixValues[i, i];
@@ -404,14 +407,26 @@ namespace MushroomsCs
                         x1[i] -= D.MatrixValues[i, i] * U.MatrixValues[i, j] * x1[j];
                     }
                 }
+                for(int j = 0; j < x2.Length; j++)
+                {
+                    x1norm += x1[j] * x1[j];
+                    x2norm += x2[j] * x2[j];
+                }
+
+                x2norm = Math.Sqrt(x2norm);
+                x1norm = Math.Sqrt(x1norm);
+
+                if (Math.Abs(x1norm) - Math.Abs(x2norm) < 1e-16 && x2[0] > 0)
+                {
+                    Console.WriteLine("Gauss Seidel breaks on iteration nr - " + k);
+                    break;
+                }
 
                 for (int j = 0; j < x1.Length; j++)
                 {
-                    Console.Write(x1[j] + " ");
+                    x2[j] = x1[j];
                 }
-                Console.WriteLine();
             }
-            Console.WriteLine("==========================================");
             return x1;
         }
 
@@ -421,6 +436,19 @@ namespace MushroomsCs
                 return 0;
 
             return 1 / x;
+        }
+
+        public override string ToString()
+        {
+            var matrix = string.Empty;
+            for (int i = 0; i < MatrixValues.GetLength(0); i++)
+            {
+                for (int j = 0; j < MatrixValues.GetLength(1); j++)
+                {
+                    matrix += MatrixValues[i, j] + " ";
+                }
+            }
+            return matrix;
         }
     }
 }

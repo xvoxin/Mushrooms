@@ -8,7 +8,7 @@ namespace MushroomsCs
 {
     public class File
     {
-        private const string DataFileName = "SampleData.txt";
+        private const string DataFileName = "SampleData";
 
         public void WriteToFile(Matrix myMatrix, int size, StreamWriter sw)
         {
@@ -31,21 +31,21 @@ namespace MushroomsCs
             sw.WriteLine();
         }
 
+        public void WriteToFile(int x, StreamWriter sw)
+        {
+            sw.Write(x);
+        }
+
         public double[] ReadVectorFromFile(int size, StreamReader sr)
         {
             var vector = new double[size];
 
-            string line = "";
-
-            line = sr.ReadLine();
+            var line = sr.ReadLine();
             string[] splitLine = line.Split(' ');
             
             for (int j = 0; j < size; j++)
             {
-                if(vector is double[])
-                    vector[j] = (dynamic) double.Parse(splitLine[j], System.Globalization.CultureInfo.InvariantCulture);
-                else if (vector is float[])
-                    vector[j] = (dynamic) float.Parse(splitLine[j], System.Globalization.CultureInfo.InvariantCulture);
+                vector[j] = double.Parse(splitLine[j], System.Globalization.CultureInfo.InvariantCulture);
             }
 
             return vector;
@@ -55,8 +55,7 @@ namespace MushroomsCs
         {
             double[,] matrix = new double[size, size];
 
-            string line = "";
-            line = sr.ReadLine();
+            var line = sr.ReadLine();
             string[] splitLine = line.Split(' ');
 
             for (int i = 0; i < size; i++)
@@ -77,15 +76,15 @@ namespace MushroomsCs
 
             for (int i = 0; i < size; i++)
             {
-                vector[i] = (dynamic)random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
+                vector[i] = random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
             }
 
             return vector;
         }
 
-        public static Board CreateBoard()
+        public static Board CreateBoard(int nr)
         {
-            var data = System.IO.File.ReadAllLines(DataFileName);
+            var data = System.IO.File.ReadAllLines(DataFileName + nr + ".txt");
             var board = new Board
             {
                 Size = 2 * int.Parse(data[0]) + 1,
@@ -116,6 +115,7 @@ namespace MushroomsCs
             };
             cube.ProbabilitiesOfCertainResult = new double[cube.NumberOfWalls];
             cube.PossibleResults = new int[cube.NumberOfWalls];
+            cube.NaturalProbabilities = new int[cube.NumberOfWalls];
             var posibilites = data[4].Split(' ').Select(x => int.Parse(x)).ToList();
             var probabilities = data[5].Split(' ').Select(x => int.Parse(x)).ToList();
             var sumOfProbabilities = probabilities.Sum();
@@ -123,6 +123,7 @@ namespace MushroomsCs
             {
                 cube.PossibleResults[i] = posibilites[i];
                 cube.ProbabilitiesOfCertainResult[i] = (double)probabilities[i] / sumOfProbabilities;
+                cube.NaturalProbabilities[i] = probabilities[i];
             }
             board.Cube = cube;
 
