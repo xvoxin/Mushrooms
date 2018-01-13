@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq.Expressions;
 using System.Threading;
 using MushroomsCs.Models;
 
@@ -43,6 +44,10 @@ namespace MushroomsCs
                 FileManager.CreateBoard(12)
             };
 
+            var fm = new FileManager();
+            var MatrixData = new StreamWriter("../../../Output/MatrixData.txt");
+            var VectorData = new StreamWriter("../../../Output/VectorData.txt");
+            
             foreach (var board in boards)
             {
                 
@@ -53,10 +58,13 @@ namespace MushroomsCs
                     board.Cube.PossibleResults, board.Cube.ProbabilitiesOfCertainResult);
                 stopwatch.Stop();
                 File.AppendAllText(TimesMatrixCreation, $"{stopwatch.Elapsed.TotalMilliseconds}\n");
-                stopwatch.Reset();
                 
                 var matrix = new Matrix(prop.ProbMatrix);
 
+                fm.WriteToFile(matrix, prop.VectorB.Length, MatrixData);
+                fm.WriteToFile(prop.VectorB, prop.VectorB.Length, VectorData);
+
+                stopwatch.Reset();
                 stopwatch.Start();
                 var seidel = matrix.GaussSeidelMethod((double[])prop.VectorB.Clone(), 7000);
                 stopwatch.Stop();
@@ -76,6 +84,9 @@ namespace MushroomsCs
                 stopwatch.Reset();
                 File.AppendAllText(MatrixSize, $"{gauss.Length}\n");
             }
+
+            MatrixData.Close();
+            VectorData.Close();
         }
     }
 }
