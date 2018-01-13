@@ -13,7 +13,8 @@ namespace MushroomsCs
         private const string TimesGaussWithOptimization = "../../../Output/TimesGaussWithOptimization.txt";
         private const string TimesSeidel = "../../../Output/TimesSeidel.txt";
         private const string TimesMatrixCreation = "../../../Output/TimesMatrixCreation.txt";
-
+        private const string MatrixSize = "../../../Output/MatrixSize.txt";
+        
         private static void Main()
         {
             var culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
@@ -24,6 +25,7 @@ namespace MushroomsCs
             File.Create(TimesSeidel).Close();
             File.Create(TimesGaussWithOptimization).Close();
             File.Create(TimesGaussWithoutOptimization).Close();
+            File.Create(MatrixSize).Close();
             
             var prop = new Probability();
             var boards = new List<Board>
@@ -72,6 +74,7 @@ namespace MushroomsCs
                 stopwatch.Stop();
                 File.AppendAllText(TimesGaussWithoutOptimization, $"{stopwatch.Elapsed.TotalMilliseconds}\n");
                 stopwatch.Reset();
+                File.AppendAllText(MatrixSize, $"{gauss.Length}\n");
             }
         }
     }
