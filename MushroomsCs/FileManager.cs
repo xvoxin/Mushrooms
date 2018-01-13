@@ -6,7 +6,7 @@ using MushroomsCs.Models;
 
 namespace MushroomsCs
 {
-    public class File
+    public class FileManager
     {
         private const string DataFileName = "SampleData";
 

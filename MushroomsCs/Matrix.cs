@@ -158,7 +158,7 @@ namespace MushroomsCs
             return res;
         }
 
-        public double[] GaussWithPartialPivot(double[] vector)
+        public double[] GaussWithPartialPivot(double[] vector, bool optimize)
         {
             SetTempMatrix();
             var currentRow = 0;
@@ -167,7 +167,7 @@ namespace MushroomsCs
             {
                 var smallestRowIndex = FindIndexOfRowWithGreatestNumberInGivenColumn(currentRow, currentColumn);
                 SwapRows(vector, currentRow, smallestRowIndex);
-                ResetAllColumnsBelow(vector, currentRow, currentColumn);
+                ResetAllColumnsBelow(vector, currentRow, currentColumn, optimize);
             }
             return GetResultsAfterGauss(vector);
         }
@@ -187,7 +187,7 @@ namespace MushroomsCs
                 {
                     vectorHistory = SwapColumns(i, greatestElementPosition.column, vectorHistory);
                 }
-                ResetAllColumnsBelow(vector, i, i);
+                ResetAllColumnsBelow(vector, i, i, false);
             }
             return GetProperVector(vector, vectorHistory);
 
@@ -296,11 +296,15 @@ namespace MushroomsCs
             return index;
         }
 
-        public void ResetAllColumnsBelow(double[] vector, int rowNumber, int columnNumber)
+        public void ResetAllColumnsBelow(double[] vector, int rowNumber, int columnNumber, bool optimize)
         {
             for (int i = rowNumber + 1; i < NumberOfRows; i++)
             {
                 var multiplier = (dynamic)TempMatrixValues[i, columnNumber] / TempMatrixValues[rowNumber, columnNumber] * (-1);
+                if (multiplier == 0 && optimize)
+                {
+                    continue;
+                }
                 for (int j = columnNumber; j < NumberOfColumns; j++)
                 {
                     TempMatrixValues[i, j] += multiplier * TempMatrixValues[rowNumber, j];
