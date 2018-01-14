@@ -100,15 +100,6 @@ namespace MushroomsCs
                 }
             };
 
-            var mushroomData = data[1].Split(' ');
-            var numberOfMushrooms = int.Parse(mushroomData[0]);
-            var mushrooms = new List<Mushroom>();
-            for (int i = 1; i <= numberOfMushrooms; i++)
-            {
-                mushrooms.Add(new Mushroom { Location = int.Parse(mushroomData[i]) });
-            }
-            board.Muschrooms = mushrooms;
-
             var cube = new Cube
             {
                 NumberOfWalls = int.Parse(data[3])
@@ -128,6 +119,48 @@ namespace MushroomsCs
             board.Cube = cube;
 
             return board;
+        }
+
+        public static IEnumerable<Board> GenerateBoards(int numberOfBoards)
+        {
+            for (var i = 5; i <= numberOfBoards; i++)
+            {
+                var board = new Board
+                {
+                    Size = 2 * i + 1,
+                    Player1 = new Player
+                    {
+                        Location = i,
+                        NumberOfCollectedMushrooms = 0
+                    },
+                    Player2 = new Player
+                    {
+                        Location = -i,
+                        NumberOfCollectedMushrooms = 0
+                    }
+                };
+
+                var cube = new Cube
+                {
+                    NumberOfWalls = 3
+                };
+                cube.ProbabilitiesOfCertainResult = new double[cube.NumberOfWalls];
+                cube.PossibleResults = new []
+                {
+                    0, 1, -1
+                };
+                cube.NaturalProbabilities = new []
+                {
+                    1, 1, 1
+                };
+                
+                for (int y = 0; y < cube.NumberOfWalls; y++)
+                {
+                    cube.ProbabilitiesOfCertainResult[y] = (double)cube.NaturalProbabilities[y] / cube.NaturalProbabilities.Sum();
+                }
+                board.Cube = cube;
+                yield return board;
+            }
         }
     }
 }

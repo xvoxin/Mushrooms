@@ -8,6 +8,9 @@ namespace MushroomsCs
         public int NumberOfRows => MatrixValues.GetLength(0);
         public int NumberOfColumns => MatrixValues.GetLength(1);
 
+        private double _smallPositiveDouble = 1e-15;
+        private double _smallNegativeDouble = -1e-15;
+
         public double[,] MatrixValues { get; set; }
         public double[,] TempMatrixValues { get; set; }
 
@@ -300,8 +303,8 @@ namespace MushroomsCs
         {
             for (int i = rowNumber + 1; i < NumberOfRows; i++)
             {
-                var multiplier = (dynamic)TempMatrixValues[i, columnNumber] / TempMatrixValues[rowNumber, columnNumber] * (-1);
-                if (multiplier == 0 && optimize)
+                var multiplier = TempMatrixValues[i, columnNumber] / TempMatrixValues[rowNumber, columnNumber] * (-1);
+                if (multiplier > _smallNegativeDouble && multiplier < _smallPositiveDouble  && optimize)
                 {
                     continue;
                 }
@@ -311,60 +314,6 @@ namespace MushroomsCs
                 }
                 vector[i] += vector[rowNumber] * multiplier;
             }
-        }
-
-        public double[] JacobyMethod(double[] vectorB, int numberOfIterations)
-        {
-            SetTempMatrix();
-            Matrix D = new Matrix(new double[NumberOfColumns, NumberOfRows]);
-            Matrix LU = new Matrix(new double[NumberOfColumns, NumberOfRows]);
-            double[] x1 = new double[NumberOfColumns];
-            double[] x2 = new double[NumberOfColumns];
-
-            double x1norm = 0;
-            double x2norm = 0;
-
-            for (int i = 0; i < NumberOfColumns; i++)
-            {
-                for (int j = 0; j < NumberOfColumns; j++)
-                {
-                    if (i == j)
-                    {
-                        D.MatrixValues[i, i] = InverseNumber(TempMatrixValues[i, i]);
-                        LU.MatrixValues[i, i] = 0;
-                    }
-                    else
-                    {
-                        D.MatrixValues[i, j] = 0;
-                        LU.MatrixValues[i, j] = -TempMatrixValues[i, j];
-                    }
-                }
-            }
-            for (int i = 0; i < numberOfIterations; i++)
-            {
-                x2 = D * AddVectors(LU * x1, vectorB);
-                for (int j = 0; j < x2.Length; j++)
-                {
-                    x1norm += x1[j] * x1[j];
-                    x2norm += x2[j] * x2[j];
-                }
-
-                x2norm = Math.Sqrt(x2norm);
-                x1norm = Math.Sqrt(x1norm);
-                
-                if (Math.Abs(x2norm) - Math.Abs(x1norm) < 1e-16 && x2[0] > 0)
-                {
-                    Console.WriteLine("Jacoby break on iteration nr - " + i);
-                    break;
-                }
-                
-                for (int j = 0; j < x1.Length; j++)
-                {
-                    x1[j] = x2[j];
-                }
-            }
-            
-            return x1;
         }
 
         public double[] GaussSeidelMethod(double[] vectorB, int numberOfIterations) 
@@ -420,7 +369,7 @@ namespace MushroomsCs
                 x2norm = Math.Sqrt(x2norm);
                 x1norm = Math.Sqrt(x1norm);
 
-                if (Math.Abs(x1norm) - Math.Abs(x2norm) < 1e-16 && x2[0] > 0)
+                if (Math.Abs(x1norm) - Math.Abs(x2norm) < 1e-10 && x2[0] > 0)
                 {
                     Console.WriteLine("Gauss Seidel breaks on iteration nr - " + k);
                     break;
@@ -451,6 +400,7 @@ namespace MushroomsCs
                 {
                     matrix += MatrixValues[i, j] + " ";
                 }
+                Console.WriteLine();
             }
             return matrix;
         }
