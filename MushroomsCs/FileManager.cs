@@ -8,8 +8,6 @@ namespace MushroomsCs
 {
     public class FileManager
     {
-        private const string DataFileName = "SampleData";
-
         public void WriteToFile(Matrix myMatrix, int size, StreamWriter sw)
         {
             for (int i = 0; i < size; i++)
@@ -69,58 +67,6 @@ namespace MushroomsCs
             return matrix;
         }
 
-        public double[] FillVectorWithRandom(int size)
-        {
-            var vector = new double[size];
-            var random = new Random();
-
-            for (int i = 0; i < size; i++)
-            {
-                vector[i] = random.NextDouble() * random.Next(Int32.MinValue, Int32.MaxValue);
-            }
-
-            return vector;
-        }
-
-        public static Board CreateBoard(int nr)
-        {
-            var data = System.IO.File.ReadAllLines(DataFileName + nr + ".txt");
-            var board = new Board
-            {
-                Size = 2 * int.Parse(data[0]) + 1,
-                Player1 = new Player
-                {
-                    Location = int.Parse(data[2].Split(' ')[0]),
-                    NumberOfCollectedMushrooms = 0
-                },
-                Player2 = new Player
-                {
-                    Location = int.Parse(data[2].Split(' ')[1]),
-                    NumberOfCollectedMushrooms = 0
-                }
-            };
-
-            var cube = new Cube
-            {
-                NumberOfWalls = int.Parse(data[3])
-            };
-            cube.ProbabilitiesOfCertainResult = new double[cube.NumberOfWalls];
-            cube.PossibleResults = new int[cube.NumberOfWalls];
-            cube.NaturalProbabilities = new int[cube.NumberOfWalls];
-            var posibilites = data[4].Split(' ').Select(x => int.Parse(x)).ToList();
-            var probabilities = data[5].Split(' ').Select(x => int.Parse(x)).ToList();
-            var sumOfProbabilities = probabilities.Sum();
-            for (int i = 0; i < cube.NumberOfWalls; i++)
-            {
-                cube.PossibleResults[i] = posibilites[i];
-                cube.ProbabilitiesOfCertainResult[i] = (double)probabilities[i] / sumOfProbabilities;
-                cube.NaturalProbabilities[i] = probabilities[i];
-            }
-            board.Cube = cube;
-
-            return board;
-        }
-
         public static IEnumerable<Board> GenerateBoards(int numberOfBoards)
         {
             for (var i = 5; i <= numberOfBoards; i++)
@@ -161,6 +107,45 @@ namespace MushroomsCs
                 board.Cube = cube;
                 yield return board;
             }
+        }
+
+        public static Board GenerateBoard(int boardSize)
+        {
+            var board = new Board
+            {
+                Size = 2 * boardSize + 1,
+                Player1 = new Player
+                {
+                    Location = boardSize,
+                    NumberOfCollectedMushrooms = 0
+                },
+                Player2 = new Player
+                {
+                    Location = -boardSize,
+                    NumberOfCollectedMushrooms = 0
+                }
+            };
+
+            var cube = new Cube
+            {
+                NumberOfWalls = 3
+            };
+            cube.ProbabilitiesOfCertainResult = new double[cube.NumberOfWalls];
+            cube.PossibleResults = new[]
+            {
+                0, 1, -1
+            };
+            cube.NaturalProbabilities = new[]
+            {
+                1, 1, 1
+            };
+
+            for (int y = 0; y < cube.NumberOfWalls; y++)
+            {
+                cube.ProbabilitiesOfCertainResult[y] = (double)cube.NaturalProbabilities[y] / cube.NaturalProbabilities.Sum();
+            }
+            board.Cube = cube;
+            return board;
         }
     }
 }

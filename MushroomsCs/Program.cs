@@ -20,15 +20,41 @@ namespace MushroomsCs
             var culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
             culture.NumberFormat.NumberDecimalSeparator = ".";
             Thread.CurrentThread.CurrentCulture = culture;
-            //CountStatistics();
+            CountStatistics();
 
-            var approximation = new Approximation();
-            var timeForPivLuCpp = approximation.GetTimeForGivenBoardSize(TimesPivLuCpp, 100, 3);
+            /*var approximation = new Approximation();
+            var timesForPivLu = File.ReadAllLines(TimesPivLuCpp).Select(double.Parse).ToArray();
+            /*var mistake = 0.0d;
+            for (int i = 10; i < 17; i++)
+            {
+                var timeForPivLuCpp = approximation.GetTimeForGivenBoardSize(TimesPivLuCpp, i, 3);
+                mistake += Approximation.MyPow(timesForPivLu[i - 5] - timeForPivLuCpp, 2);
+                Console.WriteLine(timeForPivLuCpp);
+            }
+
+            Console.WriteLine($"Mistake: {mistake}");*/
+            /*var approximation = new Approximation();
+            var size = 15;
+            var timeForPivLuCpp = approximation.GetTimeForGivenBoardSize(TimesMatrixCreation, size, 1);
             Console.WriteLine(timeForPivLuCpp);
+            var prop = new Probability();
 
-            var timeForGaussWithOptimization =
+            var board = FileManager.GenerateBoard(size);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Reset();
+            stopwatch.Start();
+            prop.CreateMatrixWithProbability(board.Size, board.Player1.Location, board.Player2.Location,
+                board.Cube.PossibleResults, board.Cube.ProbabilitiesOfCertainResult);
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
+            var matrix = new Matrix(prop.ProbMatrix);
+            
+            //matrix.GaussWithPartialPivot((double[]) prop.VectorB.Clone(), true);
+            
+            /*var timeForGaussWithOptimization =
                 approximation.GetTimeForGivenBoardSize(TimesGaussWithOptimization, 12, 3);
-            Console.WriteLine(timeForGaussWithOptimization);
+            Console.WriteLine(timeForGaussWithOptimization);*/
         }
 
         private static void CountStatistics()
@@ -66,12 +92,14 @@ namespace MushroomsCs
                 stopwatch.Start();
                 var seidel = matrix.GaussSeidelMethod((double[])prop.VectorB.Clone(), 7000);
                 stopwatch.Stop();
+                Console.WriteLine($"Seidel Result {seidel[0]}");
                 File.AppendAllText(TimesSeidel, $"{stopwatch.Elapsed.TotalMilliseconds}\n");
                 stopwatch.Reset();
 
                 stopwatch.Start();
                 var gaussOptimized = matrix.GaussWithPartialPivot((double[])prop.VectorB.Clone(), true);
                 stopwatch.Stop();
+                Console.WriteLine($"Gauss Optimized result {gaussOptimized[0]}");
                 File.AppendAllText(TimesGaussWithOptimization, $"{stopwatch.Elapsed.TotalMilliseconds}\n");
                 stopwatch.Reset();
 
