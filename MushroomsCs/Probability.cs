@@ -1,12 +1,16 @@
-﻿namespace MushroomsCs
+﻿using System.Collections.Generic;
+using NUnit.Framework;
+
+namespace MushroomsCs
 {
     public class Probability
     {
         public double[,] ProbMatrix;
         public double[] VectorB;
+        public List<double[]> LargeMatrix;
 
         public void CreateMatrixWithProbability(int mapLength, int playerOnePosition, int playerTwoPosition, 
-            int[] qubeValues, double[] qubePropabilities)
+            int[] qubeValues, double[] qubePropabilities, bool large)
         {
 
             int i = 0;
@@ -49,24 +53,53 @@
                 piTable[j].SetNextMove((Pi[])piTable.Clone());
             }
             
-            ProbMatrix = new double[possibility * 2, possibility * 2];
             VectorB = new double[possibility * 2];
-            for (int x = 0; x < possibility * 2; x++)
-            {
-                ProbMatrix[x, x] = 1;
-                for (int j = 0; j < piTable[x].NextPlayerMoveId.Length; j++)
-                {
-                    var nextPlayerId = piTable[x].NextPlayerMoveId[j];
-                    var prob = qubePropabilities[j];
 
-                    if (nextPlayerId == -1 && piTable[x].IsPlayerOneTurn)
+            if (!large)
+            {
+                ProbMatrix = new double[possibility * 2, possibility * 2];
+                for (int x = 0; x < possibility * 2; x++)
+                {
+                    ProbMatrix[x, x] = 1;
+                    for (int j = 0; j < piTable[x].NextPlayerMoveId.Length; j++)
                     {
-                        VectorB[x] += prob;
+                        var nextPlayerId = piTable[x].NextPlayerMoveId[j];
+                        var prob = qubePropabilities[j];
+
+                        if (nextPlayerId == -1 && piTable[x].IsPlayerOneTurn)
+                        {
+                            VectorB[x] += prob;
+                        }
+                        else if(nextPlayerId == -1 && piTable[x].IsPlayerOneTurn == false) { }
+                        else
+                        {
+                            ProbMatrix[x, nextPlayerId] += prob;
+                        }
                     }
-                    else if(nextPlayerId == -1 && piTable[x].IsPlayerOneTurn == false) { }
-                    else
+                }
+            }
+            else
+            {
+                LargeMatrix = new List<double[]>();
+                for (int x = 0; x < possibility * 2; x++)
+                {
+                    //ProbMatrix[x, x] = 1;
+                    LargeMatrix.Add(new double[]{ x, x, 1});
+                    for (int j = 0; j < piTable[x].NextPlayerMoveId.Length; j++)
                     {
-                        ProbMatrix[x, nextPlayerId] += prob;
+                        var nextPlayerId = piTable[x].NextPlayerMoveId[j];
+                        var prob = qubePropabilities[j];
+
+                        if (nextPlayerId == -1 && piTable[x].IsPlayerOneTurn)
+                        {
+                            VectorB[x] += prob;
+                        }
+                        else if (nextPlayerId == -1 && piTable[x].IsPlayerOneTurn == false) { }
+                        else
+                        {
+                            //ProbMatrix[x, nextPlayerId] += prob;
+                            LargeMatrix.Add(new double[]{ x, nextPlayerId, prob });
+                        }
                     }
                 }
             }

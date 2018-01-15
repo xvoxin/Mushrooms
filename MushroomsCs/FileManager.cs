@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using MushroomsCs.Models;
 
 namespace MushroomsCs
@@ -47,6 +48,15 @@ namespace MushroomsCs
             }
 
             return vector;
+        }
+
+        public void WriteLargeMatrixToFIle(List<double[]> matrix, StreamWriter sw)
+        {
+            for (int i = 0; i < matrix.Count; i++)
+            {
+                string output = matrix[i][0] + " " + matrix[i][1] + " " + matrix[i][2] + " ";
+                sw.Write(output);
+            }
         }
 
         public double[,] ReadMatrixFromFile(int size, StreamReader sr)
