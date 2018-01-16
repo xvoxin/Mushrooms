@@ -15,7 +15,7 @@ namespace MushroomsCs
         private const string TimesSeidel = "../../../Output/TimesSeidel.txt";
         private const string TimesMatrixCreation = "../../../Output/TimesMatrixCreation.txt";
         private const string MatrixSize = "../../../Output/MatrixSize.txt";
-        private const string TimesSparseCpp = "../../../Output/TimesPivLu.txt";
+        private const string TimesSparseCpp = "../../../Output/TimesSparseLuCpp.txt";
         private const string TimesSeidelCpp = "../../../Output/TimesSeidelCpp.txt";
 
         private static void Main()
@@ -23,11 +23,8 @@ namespace MushroomsCs
             var culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
             culture.NumberFormat.NumberDecimalSeparator = ".";
             Thread.CurrentThread.CurrentCulture = culture;
-            //GetResultsAndApproximations();
-            var approximation = new Approximation();
-            const int size = 112;
-            Console.WriteLine(approximation.GetTimeForGivenBoardSize(TimesSeidelCpp, size, 1));
-
+            CountStatistics();
+            GetResultsAndApproximations();
         }
 
         private static void GetResultsAndApproximations()
@@ -113,17 +110,15 @@ namespace MushroomsCs
                 stopwatch.Start();
                 var seidel = matrix.GaussSeidelMethod((double[])prop.VectorB.Clone(), 7000);
                 stopwatch.Stop();
-                Console.WriteLine($"Seidel Result {seidel[0]}");
                 File.AppendAllText(TimesSeidel, $"{stopwatch.Elapsed.TotalMilliseconds}\n");
                 stopwatch.Reset();
 
                 stopwatch.Start();
                 var gaussOptimized = matrix.GaussWithPartialPivot((double[])prop.VectorB.Clone(), true);
                 stopwatch.Stop();
-                Console.WriteLine($"Gauss Optimized result {gaussOptimized[0]}");
                 File.AppendAllText(TimesGaussWithOptimization, $"{stopwatch.Elapsed.TotalMilliseconds}\n");
                 stopwatch.Reset();
-
+                
                 stopwatch.Start();
                 var gauss = matrix.GaussWithPartialPivot((double[])prop.VectorB.Clone(), false);
                 stopwatch.Stop();

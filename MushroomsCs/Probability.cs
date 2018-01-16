@@ -82,7 +82,6 @@ namespace MushroomsCs
                 LargeMatrix = new List<double[]>();
                 for (int x = 0; x < possibility * 2; x++)
                 {
-                    //ProbMatrix[x, x] = 1;
                     LargeMatrix.Add(new double[]{ x, x, 1});
                     for (int j = 0; j < piTable[x].NextPlayerMoveId.Length; j++)
                     {
@@ -96,7 +95,6 @@ namespace MushroomsCs
                         else if (nextPlayerId == -1 && piTable[x].IsPlayerOneTurn == false) { }
                         else
                         {
-                            //ProbMatrix[x, nextPlayerId] += prob;
                             LargeMatrix.Add(new double[]{ x, nextPlayerId, prob });
                         }
                     }
