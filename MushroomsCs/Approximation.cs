@@ -8,7 +8,7 @@ namespace MushroomsCs
     {
         public double GetTimeForGivenBoardSize(string timesFileName, int boardSize, int polynomialDegree)
         {
-            var startingBoardSize = 5;
+            const int startingBoardSize = 5;
             var times = File.ReadAllLines(timesFileName).Select(double.Parse).ToArray();
             var pointsForPolynomial = new double[times.Length, 2];
             for (int i = 0; i < times.Length; i++)
@@ -17,7 +17,13 @@ namespace MushroomsCs
                 pointsForPolynomial[i, 1] = times[i];
             }
             var coefficients = CountCoefficientsOfPolynomial(pointsForPolynomial, polynomialDegree);
-            return coefficients.Select((coefficient, iterator) => coefficient * MyPow(boardSize, iterator)).Sum();
+            var sum = 0.0;
+            for (int i = 0; i < coefficients.Length; i++)
+            {
+                sum += coefficients[i] * MyPow(boardSize, i);
+            }
+
+            return sum;
         }
 
         public double[] CountCoefficientsOfPolynomial(double[,] tableOfPoints, int polynomialDegree)
